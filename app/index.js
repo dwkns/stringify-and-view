@@ -1,2 +1,11 @@
-export const sum = (a, b) => a + b;
-console.log(`1 + 2 is: ${sum(1, 2)}`);
+import { customStringify } from "./customStringify.js";
+import { collections } from "./getCollections.js";
+
+customStringify(collections.all,{
+  filename: 'json/collections.json',
+  addTimestamp: false
+})
+
+
+
+
