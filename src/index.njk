@@ -1,22 +1,75 @@
 ---
-title: "Hello, World!"
+title: "JSON Viewer"
 ---
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="json-view.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script src="assets/js/json-viewer.js"></script>
 </head>
-
 <body>
+    <h1>{{title}}</h1>
+    
+    <div class="controls">
+        <label>
+            <input type="checkbox" id="showTypes" checked>
+            Show Types
+        </label>
+        <label>
+            <input type="checkbox" id="showCounts" checked>
+            Show Counts
+        </label>
+        <label>
+            <input type="checkbox" id="defaultExpanded">
+            Start Expanded
+        </label>
+        <div class="help-text">
+            Hold Option/Alt key while clicking a disclosure triangle to toggle all nested elements
+        </div>
+    </div>
 
-  <p class="">{{title}}</p>
-  <p class="">Number of collections: {{ collections.all.length }}</p>
-{{ collections.all[0] | myFilter | safe }}
+    <div id="jsonContainer" class="json-container"></div>
 
+    <script>
+        // Fetch and parse the JSON file
+        fetch('op.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('jsonContainer');
+                const viewer = new JSONViewer({
+                    showTypes: document.getElementById('showTypes').checked,
+                    showCounts: document.getElementById('showCounts').checked,
+                    defaultExpanded: document.getElementById('defaultExpanded').checked
+                });
+                
+                viewer.render(data, container);
+
+                // Add event listeners for controls
+                document.getElementById('showTypes').addEventListener('change', (e) => {
+                    viewer.options.showTypes = e.target.checked;
+                    container.innerHTML = '';
+                    viewer.render(data, container);
+                });
+
+                document.getElementById('showCounts').addEventListener('change', (e) => {
+                    viewer.options.showCounts = e.target.checked;
+                    container.innerHTML = '';
+                    viewer.render(data, container);
+                });
+
+                document.getElementById('defaultExpanded').addEventListener('change', (e) => {
+                    viewer.options.defaultExpanded = e.target.checked;
+                    container.innerHTML = '';
+                    viewer.render(data, container);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading JSON:', error);
+                document.getElementById('jsonContainer').innerHTML = 'Error loading JSON file';
+            });
+    </script>
 </body>
-
-</html>
+</html> 

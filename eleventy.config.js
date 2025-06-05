@@ -5,6 +5,8 @@ import { customStringify } from "./app/customStringify.js";
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default (eleventyConfig) => {
   eleventyConfig.addPassthroughCopy({"lib/js/json-view.js": "json-view.js"});
+  eleventyConfig.addPassthroughCopy("src/assets");
+  eleventyConfig.addPassthroughCopy("src/op.json");
   
   
 
@@ -24,7 +26,7 @@ export default (eleventyConfig) => {
    
    const html = `  <div id="${id}"></div>
   <script type="text/javascript">
-    fetch('${filename}')
+    fetch('/${filename}')
     .then((res)=> {
       return res.text();
     })

@@ -1,0 +1,95 @@
+/* Main page styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.controls {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.controls label {
+    margin-right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.json-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.help-text {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+/* JSON Viewer styles */
+.json-viewer-node {
+    font-family: monospace;
+    line-height: 1.4;
+    position: relative;
+}
+
+.json-viewer-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 16px; /* Space for the toggle button */
+}
+
+.json-viewer-toggle {
+    cursor: pointer;
+    user-select: none;
+    width: 16px;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.json-viewer-key {
+    color: #881391;
+}
+
+.json-viewer-string {
+    color: #c41a16;
+}
+
+.json-viewer-number {
+    color: #1c00cf;
+}
+
+.json-viewer-boolean {
+    color: #0000ff;
+}
+
+.json-viewer-null {
+    color: #808080;
+}
+
+.json-viewer-type {
+    color: #808080;
+    font-size: 0.8em;
+    margin: 0 4px;
+}
+
+.json-viewer-count {
+    color: #808080;
+    font-size: 0.8em;
+}
+
+.json-viewer-date {
+    color: #008000;
+} 

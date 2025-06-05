@@ -10,7 +10,8 @@
   "type": "module",
   "scripts": {
     "start": "node app/index.js",
-    "dev": "eleventy --serve",
+    "clean": "npx rimraf dist build",
+    "dev": "npm run clean && eleventy --serve --quiet",
     "test": "vitest run"
   },
   "dependencies": {
