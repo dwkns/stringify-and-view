@@ -1,5 +1,5 @@
-import { customStringify } from "./customStringify.js";
-import { collections } from "./getCollections.js";
+import { customStringify } from "./custom-stringify.js";
+import { collections } from "./get-eleventy-collections.js";
 
 customStringify(collections.all,{
   filename: 'json/collections.json',
