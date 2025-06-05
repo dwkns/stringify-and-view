@@ -1,0 +1,16 @@
+{
+  "name": "demo-project",
+  "version": "1.0.0",
+  "main": "app/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^3.2.1"
+  },
+  "author": "dazza",
+  "type": "module",
+  "scripts": {
+    "start": "node app/index.js",
+    "dev": "npm run start",
+    "test": "vitest"
+  }
+}
