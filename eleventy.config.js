@@ -1,4 +1,5 @@
 import jsonViewer from './stringify-and-view/json-viewer.js';
+import logToConsole from 'eleventy-plugin-console-plus';
 
 
 
@@ -42,6 +43,7 @@ export default (eleventyConfig) => {
 
   // Add the JSON viewer filter
   eleventyConfig.addFilter('jsonViewer', jsonViewer);
+eleventyConfig.addPlugin(logToConsole,{})
 };
 
 export const config = {

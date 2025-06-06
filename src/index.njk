@@ -10,19 +10,20 @@ title: "JSON Viewer"
 </head>
 <body>
     <h1>{{title}}</h1>
-
-
+  
+    
     {{ collections.all | jsonViewer({
         showTypes: true,
         showCounts: true,
         defaultExpanded: false
     }) | safe }}
-
+    
     {{ collections.all | jsonViewer({
         showTypes: false,
         showCounts: false,
         defaultExpanded: false
     }) | safe }}
+    {% console collections.all%}
   
    
 </body>
