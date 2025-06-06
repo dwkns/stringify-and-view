@@ -34,16 +34,20 @@ const JSONViewerModule = {
 
     .json-viewer-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 4px;
       padding-left: 16px;
+      min-height: 14px;
     }
 
     .json-viewer-toggle {
       cursor: pointer;
       user-select: none;
       width: 14px;
-      display: inline-block;
+      height: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       position: absolute;
       left: 0;
       top: 0;
@@ -124,10 +128,11 @@ const JSONViewerModule = {
          * @param {boolean} [options.showCounts=true] - Whether to show count labels
          * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded by default
          */
-        constructor(options = {}) {
+        constructor(container, options = {}) {
+          this.container = container;
           this.options = {
-            showTypes: options.showTypes ?? true,
-            showCounts: options.showCounts ?? true,
+            showTypes: options.showTypes === false ? false : true,
+            showCounts: options.showCounts === false ? false : true,
             defaultExpanded: options.defaultExpanded ?? false
           };
           this.isOptionKeyPressed = false;
@@ -288,8 +293,15 @@ const JSONViewerModule = {
               header.appendChild(keyElement);
             }
 
-            if (this.options.showTypes) header.appendChild(this.createTypeLabel(type));
-            if (this.options.showCounts && count !== null) header.appendChild(this.createCountLabel(count));
+            const typeLabel = this.createTypeLabel(type);
+            typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
+            header.appendChild(typeLabel);
+
+            if (count !== null) {
+              const countLabel = this.createCountLabel(count);
+              countLabel.style.display = this.options.showCounts ? 'inline' : 'none';
+              header.appendChild(countLabel);
+            }
 
             const content = document.createElement('div');
             content.className = 'json-viewer-content';
@@ -316,7 +328,10 @@ const JSONViewerModule = {
               header.appendChild(keyElement);
             }
 
-            if (this.options.showTypes) header.appendChild(this.createTypeLabel(type));
+            const typeLabel = this.createTypeLabel(type);
+            typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
+            header.appendChild(typeLabel);
+
             header.appendChild(this.createValueElement(value));
             node.appendChild(header);
           }
@@ -376,14 +391,17 @@ const JSONViewerModule = {
         createControls() {
           const controls = document.createElement('div');
           controls.className = 'json-viewer-controls';
+          controls.id = this.container.id + '-controls';
 
           const typesControl = document.createElement('label');
           typesControl.className = 'json-viewer-control';
+          typesControl.id = this.container.id + '-types-control';
           const typesCheckbox = document.createElement('input');
           typesCheckbox.type = 'checkbox';
+          typesCheckbox.id = this.container.id + '-types-checkbox';
           typesCheckbox.checked = this.options.showTypes;
-          typesCheckbox.addEventListener('change', (e) => {
-            this.options.showTypes = e.target.checked;
+          typesCheckbox.addEventListener('change', () => {
+            this.options.showTypes = typesCheckbox.checked;
             this.updateDisplay();
           });
           typesControl.appendChild(typesCheckbox);
@@ -391,11 +409,13 @@ const JSONViewerModule = {
 
           const countsControl = document.createElement('label');
           countsControl.className = 'json-viewer-control';
+          countsControl.id = this.container.id + '-counts-control';
           const countsCheckbox = document.createElement('input');
           countsCheckbox.type = 'checkbox';
+          countsCheckbox.id = this.container.id + '-counts-checkbox';
           countsCheckbox.checked = this.options.showCounts;
-          countsCheckbox.addEventListener('change', (e) => {
-            this.options.showCounts = e.target.checked;
+          countsCheckbox.addEventListener('change', () => {
+            this.options.showCounts = countsCheckbox.checked;
             this.updateDisplay();
           });
           countsControl.appendChild(countsCheckbox);
@@ -420,26 +440,32 @@ const JSONViewerModule = {
           countLabels.forEach(label => {
             label.style.display = this.options.showCounts ? 'inline' : 'none';
           });
+
+          // Update checkbox states
+          const typesCheckbox = this.container.querySelector('#' + this.container.id + '-types-checkbox');
+          const countsCheckbox = this.container.querySelector('#' + this.container.id + '-counts-checkbox');
+          if (typesCheckbox) typesCheckbox.checked = this.options.showTypes;
+          if (countsCheckbox) countsCheckbox.checked = this.options.showCounts;
         }
 
         /**
          * Renders the JSON viewer
          * @param {*} json - The JSON data to display
-         * @param {HTMLElement} container - The container element
          */
-        render(json, container) {
-          this.container = container;
+        render(json) {
           const data = typeof json === 'string' ? JSON.parse(json) : json;
-          container.appendChild(this.createControls());
+          this.container.appendChild(this.createControls());
           const root = this.createNode(null, data);
-          container.appendChild(root);
+          this.container.appendChild(root);
         }
       }
 
       // Initialize the viewer
       const container = document.getElementById('${containerId}');
-      const viewer = new JSONViewer(${JSON.stringify(options)});
-      viewer.render(container.getAttribute('data-json'), container);
+      if (container) {
+        const viewer = new JSONViewer(container, ${JSON.stringify(options)});
+        viewer.render(container.getAttribute('data-json'));
+      }
     })();
   `,
 

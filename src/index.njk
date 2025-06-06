@@ -17,6 +17,12 @@ title: "JSON Viewer"
         showCounts: true,
         defaultExpanded: false
     }) | safe }}
+
+    {{ collections.all | jsonViewer({
+        showTypes: false,
+        showCounts: false,
+        defaultExpanded: false
+    }) | safe }}
   
    
 </body>
