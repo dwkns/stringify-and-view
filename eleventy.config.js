@@ -1,13 +1,10 @@
-import { customStringify } from "./app/custom-stringify.js";
-import jsonViewer from './src/filters/json-viewer.js';
+import jsonViewer from './stringify-and-view/json-viewer.js';
 
 
 
 /** @param {import("@11ty/eleventy").UserConfig} eleventyConfig */
 export default (eleventyConfig) => {
-  // eleventyConfig.addPassthroughCopy({"lib/js/json-view.js": "json-view.js"});
-  // eleventyConfig.addPassthroughCopy("src/assets");
-  // eleventyConfig.addPassthroughCopy("src/op.json");
+
   
   
 

@@ -85,11 +85,13 @@ describe('customStringify', () => {
     it('handles circular references', async () => {
       const obj = { a: 1 };
       obj.self = obj;
-      await expect(customStringify(obj)).resolves.toBe('{"a":1,"self":"[Circular root]"}');
+      await expect(customStringify(obj)).resolves.toBe('{"a":1,"self":"[Circular root.self]"}');
+    });
 
-      const nestedObj = { a: { b: { c: {} } } };
-      nestedObj.a.b.c.self = nestedObj;
-      await expect(customStringify(nestedObj)).resolves.toBe('{"a":{"b":{"c":{"self":"[Circular root]"}}}}');
+    it('handles deeply nested circular references', async () => {
+      const obj = { a: 1 };
+      obj.nest = { b: 2, parent: obj };
+      await expect(customStringify(obj)).resolves.toBe('{"a":1,"nest":{"b":2,"parent":"[Circular root.nest.parent]"}}');
     });
   });
 
@@ -156,11 +158,14 @@ describe('customStringify', () => {
       expect(result).toBe('{"a":1,"b":"test"}');
     });
 
-    it('creates directory if it doesn\'t exist', async () => {
+    it('creates directory if it\'t exist', async () => {
       const testData = { a: 1, b: 'test' };
       await customStringify(testData, { filename });
       const content = await fs.readFile(filename, 'utf8');
-      expect(content).toBe('{"a":1,"b":"test"}');
+      expect(content).toBe(`{
+  "a": 1,
+  "b": "test"
+}`);
     });
 
     it('handles nested directories', async () => {
@@ -168,7 +173,10 @@ describe('customStringify', () => {
       const testData = { a: 1, b: 'test' };
       await customStringify(testData, { filename: nestedFilename });
       const content = await fs.readFile(nestedFilename, 'utf8');
-      expect(content).toBe('{"a":1,"b":"test"}');
+      expect(content).toBe(`{
+  "a": 1,
+  "b": "test"
+}`);
     });
 
     it('handles pretty printing', async () => {
@@ -214,7 +222,7 @@ describe('customStringify', () => {
       const parsed = JSON.parse(output);
       expect(parsed).toEqual({
         a: 1,
-        self: '[Circular root]'
+        self: '[Circular root.self]'
       });
     });
 

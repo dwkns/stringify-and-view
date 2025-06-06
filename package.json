@@ -9,7 +9,6 @@
   "author": "dazza",
   "type": "module",
   "scripts": {
-    "start": "npm run clean && node app/index.js",
     "clean": "npx rimraf dist build",
     "dev": "npm run clean && eleventy --serve --quiet",
     "test": "vitest run"

@@ -1,3 +1,4 @@
+import { customStringify } from "./custom-stringify.js";
 /**
  * JSON Viewer Module and Filter
  * Provides a collapsible, interactive JSON viewer with syntax highlighting
@@ -16,9 +17,18 @@ const JSONViewerModule = {
    * @returns {string} CSS styles as a template literal
    */
   getStyles: () => `
-    .json-viewer-node {
+    .json-viewer-container {
       font-family: monospace;
       line-height: 1.4;
+      color: #333;
+      background: #fff;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 8px 0;
+    }
+
+    .json-viewer-node {
       position: relative;
     }
 
@@ -32,46 +42,66 @@ const JSONViewerModule = {
     .json-viewer-toggle {
       cursor: pointer;
       user-select: none;
-      width: 16px;
+      width: 14px;
       display: inline-block;
       position: absolute;
       left: 0;
       top: 0;
+      color: #666;
     }
 
     .json-viewer-key {
-      color: #881391;
+      color: #0066cc;
     }
 
     .json-viewer-string {
-      color: #c41a16;
+      color: #008000;
     }
 
     .json-viewer-number {
-      color: #1c00cf;
-    }
-
-    .json-viewer-boolean {
       color: #0000ff;
     }
 
+    .json-viewer-boolean {
+      color: #0066cc;
+    }
+
     .json-viewer-null {
-      color: #808080;
+      color: #666;
     }
 
     .json-viewer-type {
-      color: #808080;
+      color: #666;
       font-size: 0.8em;
       margin: 0 4px;
     }
 
     .json-viewer-count {
-      color: #808080;
+      color: #666;
       font-size: 0.8em;
     }
 
     .json-viewer-date {
       color: #008000;
+    }
+
+    .json-viewer-controls {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .json-viewer-control {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      color: #666;
+    }
+
+    .json-viewer-control input[type="checkbox"] {
+      margin: 0;
     }
   `,
 
@@ -232,7 +262,7 @@ const JSONViewerModule = {
         createNode(key, value, depth = 0, path = '') {
           const node = document.createElement('div');
           node.className = 'json-viewer-node';
-          node.style.marginLeft = \`\${depth * 12}px\`;
+          node.style.marginLeft = \`\${depth * 4}px\`;
           if (key !== null) node.setAttribute('data-key', key);
 
           const header = document.createElement('div');
@@ -340,6 +370,59 @@ const JSONViewerModule = {
         }
 
         /**
+         * Creates the controls for toggling types and counts
+         * @returns {HTMLElement} The controls container
+         */
+        createControls() {
+          const controls = document.createElement('div');
+          controls.className = 'json-viewer-controls';
+
+          const typesControl = document.createElement('label');
+          typesControl.className = 'json-viewer-control';
+          const typesCheckbox = document.createElement('input');
+          typesCheckbox.type = 'checkbox';
+          typesCheckbox.checked = this.options.showTypes;
+          typesCheckbox.addEventListener('change', (e) => {
+            this.options.showTypes = e.target.checked;
+            this.updateDisplay();
+          });
+          typesControl.appendChild(typesCheckbox);
+          typesControl.appendChild(document.createTextNode('Show Types'));
+
+          const countsControl = document.createElement('label');
+          countsControl.className = 'json-viewer-control';
+          const countsCheckbox = document.createElement('input');
+          countsCheckbox.type = 'checkbox';
+          countsCheckbox.checked = this.options.showCounts;
+          countsCheckbox.addEventListener('change', (e) => {
+            this.options.showCounts = e.target.checked;
+            this.updateDisplay();
+          });
+          countsControl.appendChild(countsCheckbox);
+          countsControl.appendChild(document.createTextNode('Show Counts'));
+
+          controls.appendChild(typesControl);
+          controls.appendChild(countsControl);
+          return controls;
+        }
+
+        /**
+         * Updates the display based on current options
+         */
+        updateDisplay() {
+          const typeLabels = this.container.querySelectorAll('.json-viewer-type');
+          const countLabels = this.container.querySelectorAll('.json-viewer-count');
+
+          typeLabels.forEach(label => {
+            label.style.display = this.options.showTypes ? 'inline' : 'none';
+          });
+
+          countLabels.forEach(label => {
+            label.style.display = this.options.showCounts ? 'inline' : 'none';
+          });
+        }
+
+        /**
          * Renders the JSON viewer
          * @param {*} json - The JSON data to display
          * @param {HTMLElement} container - The container element
@@ -347,6 +430,7 @@ const JSONViewerModule = {
         render(json, container) {
           this.container = container;
           const data = typeof json === 'string' ? JSON.parse(json) : json;
+          container.appendChild(this.createControls());
           const root = this.createNode(null, data);
           container.appendChild(root);
         }
@@ -367,13 +451,10 @@ const JSONViewerModule = {
    */
   generate: (json, options = {}) => {
     const containerId = JSONViewerModule.generateId();
-    const jsonString = typeof json === 'string' ? json : JSON.stringify(json);
-    
-    return `
-      <style>${JSONViewerModule.getStyles()}</style>
-      <div id="${containerId}" class="json-viewer-container" data-json='${jsonString}'></div>
-      <script>${JSONViewerModule.getScript(containerId, options)}</script>
-    `;
+    const jsonString = typeof json === 'string' ? JSON.stringify(JSON.parse(json)) : JSON.stringify(json);
+    const escapedJsonString = jsonString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    return `<style>${JSONViewerModule.getStyles()}</style><div id="${containerId}" class="json-viewer-container" data-json='${escapedJsonString}'></div><script>${JSONViewerModule.getScript(containerId, options)}</script>`;
   }
 };
 
@@ -381,8 +462,12 @@ const JSONViewerModule = {
  * Eleventy filter that generates a JSON viewer
  * @param {*} json - The JSON data to display
  * @param {Object} options - Viewer configuration options
+ * @param {boolean} [options.showTypes=true] - Whether to show type labels
+ * @param {boolean} [options.showCounts=true] - Whether to show count labels
+ * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded 
  * @returns {string} The complete HTML output
  */
-export default function(json, options = {}) {
-  return JSONViewerModule.generate(json, options);
+export default async function jsonViewer(json, options = {}) {
+  const processedJSON = await customStringify(json);
+  return JSONViewerModule.generate(processedJSON, options);
 } 

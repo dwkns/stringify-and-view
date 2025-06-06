@@ -11,12 +11,11 @@ import path from 'path';
  * @param {any} data - The data to stringify
  * @param {Object} options - Options for stringification
  * @param {string} [options.filename] - Optional filename to write the output to
- * @param {boolean} [options.pretty=false] - Whether to pretty print the output
- * @param {number} [options.indent=2] - Number of spaces for indentation
- * @returns {Promise<string>} The stringified data
+ * @param {number} [options.indent=2] - Number of spaces for indentation (for file output only)
+ * @returns {Promise<string>} The compact stringified data
  */
 export async function customStringify(data, options = {}) {
-    const { filename, pretty = false, indent = 2 } = options;
+    const { filename, indent = 2 } = options;
     // Use a WeakMap to track object paths for circular reference detection
     const seen = new WeakMap();
 
@@ -44,8 +43,8 @@ export async function customStringify(data, options = {}) {
         // Handle circular references
         if (typeof value === 'object') {
             if (seen.has(value)) {
-                // Always use [Circular root] for the root object
-                return '"[Circular root]"';
+                // Output the current path where the reference is being made
+                return `"[Circular ${path}]"`;
             }
             seen.set(value, path);
 
@@ -113,9 +112,9 @@ export async function customStringify(data, options = {}) {
     if (filename) {
         const dir = path.dirname(filename);
         await fs.mkdir(dir, { recursive: true });
-        const output = pretty ? JSON.stringify(JSON.parse(json), null, indent) : json;
-        await fs.writeFile(filename, output, 'utf8');
-        return output;
+        // Write pretty-printed JSON to file, but always return compact JSON
+        const prettyOutput = JSON.stringify(JSON.parse(json), null, indent);
+        await fs.writeFile(filename, prettyOutput, 'utf8');
     }
     return json;
 } 
