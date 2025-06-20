@@ -13,16 +13,20 @@ title: "JSON Viewer"
   
     
     {{ collections.all | jsonViewer({
+        title: "collections.all",
         showTypes: true,
-        showCounts: true,
-        defaultExpanded: false
+        showCounts: false,
+        defaultExpanded: true,
+        pathsOnHover: false,
+        showControls: true 
     }) | safe }}
     
-    {{ collections.all | jsonViewer({
+    {# {{ collections.all | jsonViewer({
+        title: "collections.all hidden start",
         showTypes: false,
         showCounts: false,
         defaultExpanded: false
-    }) | safe }}
+    }) | safe }} #}
     {% console collections.all%}
   
    

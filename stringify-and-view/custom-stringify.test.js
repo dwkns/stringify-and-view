@@ -291,6 +291,50 @@ describe('customStringify', () => {
       // The only requirement: output must be valid JSON
       expect(() => JSON.parse(output)).not.toThrow();
     });
+
+
+    it('outputs the same for JSON.stringify as for customStringify for the suppled JSON', async () => {
+     // Custom class example
+class CustomClass {
+  constructor(id, value) {
+    this.id = id;
+    this.value = value;
+  }
+  get description() {
+    return `CustomClass #${this.id}: ${this.value}`;
+  }
+  set updateValue(val) {
+    this.value = val;
+  }
+}
+
+// Example object with getters and setters
+const Template = {
+  _name: 'Default',
+  get name() {
+    return this._name;
+  },
+  set name(value) {
+    this._name = value;
+  },
+  get greeting() {
+    return `Hello, ${this._name}!`;
+  }
+};
+let json = {
+  string: "hello",
+  number: 1,
+  date: new Date(),
+  object: { a: 1, b: "2" },
+  array: ["a", 1, new Date()],
+  Template: Template,
+  customInstance: new CustomClass(42, "meaning of life")
+}
+  
+      expect( await customStringify(json) ).toEqual( JSON.stringify(json) )
+     
+    });
+  
   });
 });
 
