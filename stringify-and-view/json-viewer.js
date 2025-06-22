@@ -270,8 +270,8 @@ const JSONViewerModule = {
         constructor(container, options = {}) {
           this.container = container;
           this.options = {
-            showTypes: options.showTypes === false ? false : true,
-            showCounts: options.showCounts === false ? false : true,
+            showTypes: options.showTypes === false ? false : false,
+            showCounts: options.showCounts === false ? false : false,
             defaultExpanded: options.defaultExpanded ?? false,
             pathsOnHover: options.pathsOnHover === true ? true : false,
             showControls: options.showControls === false ? false : true

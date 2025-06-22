@@ -11,12 +11,23 @@ title: "JSON Viewer"
 <body>
     <h1>{{title}}</h1>
 
-    
+    {% set string = "value" %}
+    {% set number = 123 %}
+    {% set array = ["string 1", "string 2", 3, 4 , {a:"a"} ] %}
+    {% set object = {a: "a", b:"b"} %}
+
+
+    {{  string | jsonViewer({ title: "string"}) | safe }}
+    {{  number | jsonViewer({ title: "number"}) | safe }}
+    {{  array | jsonViewer({ title: "array"}) | safe }}
+    {{  object | jsonViewer({ title: "object"}) | safe }}
+
+
     {{ collections.all[0]| jsonViewer({
         title: "collections.all",
-        showTypes: true,
+        showTypes: false,
         showCounts: false,
-        defaultExpanded: true,
+        defaultExpanded: false,
         pathsOnHover: false,
         showControls: true 
     }) | safe }}
