@@ -1,30 +1,18 @@
-import fs from 'fs/promises';
-import path from 'path';
-
 /**
- * Custom JSON stringifier that handles special cases and circular references
- * @module custom-stringify
- */
-
-/**
- * Custom stringify function that handles special cases and writes to file if needed
+ * stringifyPlus function that handles special cases and circular references
+ * @module stringify-plus
  * @param {any} data - The data to stringify
- * @param {Object} options - Options for stringification
- * @param {string} [options.filename] - Optional filename to write the output to
- * @param {number} [options.indent=2] - Number of spaces for indentation (for file output only)
  * @returns {Promise<string>} The compact stringified data
  */
-export async function customStringify(data, options = {}) {
-    const { filename, indent = 2 } = options;
+export async function stringifyPlus(data) {
     // Use a WeakMap to track object paths for circular reference detection
     const seen = new WeakMap();
 
-    function customStringifyInner(value, path = 'root', parentIsRoot = true, inArray = false) {
+    function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false) {
         // Handle special values
         if (value === undefined) return '"[ undefined ]"';
         if (value === null) {
-            // For object properties, stringify as "[ null ]"
-            return inArray ? '"[ null ]"' : '"[ null ]"';
+            return 'null';
         }
         if (typeof value === 'function') {
             const name = value.name && value.name !== 'anonymousFunction' ? value.name : 'anonymous';
@@ -56,7 +44,7 @@ export async function customStringify(data, options = {}) {
             // Handle arrays
             if (Array.isArray(value)) {
                 const elements = value.map((item, index) =>
-                    customStringifyInner(item, `${path}[${index}]`, false, true)
+                    stringifyPlusInner(item, `${path}[${index}]`, false, true)
                 );
                 return `[${elements.join(',')}]`;
             }
@@ -69,9 +57,9 @@ export async function customStringify(data, options = {}) {
                 if (val === undefined) {
                     return `${JSON.stringify(key)}:"[ undefined ]"`;
                 }
-                // For null, always output as "[ null ]"
+                // For null, always output as null
                 if (val === null) {
-                    return `${JSON.stringify(key)}:"[ null ]"`;
+                    return `${JSON.stringify(key)}:null`;
                 }
                 // For functions, symbols, and other non-JSON types, output a string description
                 if (typeof val === 'function') {
@@ -86,14 +74,14 @@ export async function customStringify(data, options = {}) {
                 }
                 if (typeof val === 'object' && val !== null && !(val instanceof Date) && !Array.isArray(val)) {
                 }
-                return `${JSON.stringify(key)}:${customStringifyInner(val, `${path}.${key}`, false, false)}`;
+                return `${JSON.stringify(key)}:${stringifyPlusInner(val, `${path}.${key}`, false, false)}`;
             });
             return `{${pairs.join(',')}}`;
         }
 
         // Handle primitive values
         if (typeof value === 'number') {
-            return Number.isFinite(value) ? value.toString() : '"[ null ]"';
+            return Number.isFinite(value) ? value.toString() : 'null';
         }
         if (typeof value === 'string') return JSON.stringify(value);
         if (typeof value === 'boolean') return value.toString();
@@ -102,14 +90,6 @@ export async function customStringify(data, options = {}) {
         return `"[${typeof value} ${value?.constructor?.name || ''}]"`;
     }
 
-    let json = customStringifyInner(data);
-
-    if (filename) {
-        const dir = path.dirname(filename);
-        await fs.mkdir(dir, { recursive: true });
-        // Write pretty-printed JSON to file, but always return compact JSON
-        const prettyOutput = JSON.stringify(JSON.parse(json), null, indent);
-        await fs.writeFile(filename, prettyOutput, 'utf8');
-    }
+    let json = stringifyPlusInner(data);
     return json;
 } 

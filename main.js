@@ -1,5 +1,4 @@
-
-import { customStringify } from './stringify-and-view/custom-stringify.js';
+import { stringifyPlus } from './stringify-and-view/stringify-plus.js';
 import Eleventy from "@11ty/eleventy";
 import fs from 'fs/promises';
 import path from 'path';
@@ -43,7 +42,7 @@ import { inspect } from "util";
 // }
 
 // const runCode = async function (json) {
-//   const custom = await customStringify(json)
+//   const custom = await stringifyPlus(json)
 //   const inBuilt = JSON.stringify(json)
 //   if (custom === inBuilt) {
 //     console.log("They Match")
@@ -71,7 +70,7 @@ import { inspect } from "util";
 //   // console.log(terminalStr)
 
 
-//   const custom = await customStringify(collections)
+//   const custom = await stringifyPlus(collections)
 //   const inBuilt = JSON.stringify(collections)
 
 
@@ -94,7 +93,7 @@ import { inspect } from "util";
 
 const obj = { "benchmarks": { "\"getBundle\" Universal Shortcode": {} } }
 const json = JSON.stringify(obj)
-const output = await customStringify(obj)
+const output = await stringifyPlus(obj)
 
 console.log(json)
 console.log(output)

@@ -1,4 +1,4 @@
-import { customStringify } from "./custom-stringify.js";
+import { stringifyPlus } from "./stringify-plus.js";
 /**
  * JSON Viewer Module and Filter
  * Provides a collapsible, interactive JSON viewer with syntax highlighting
@@ -878,6 +878,6 @@ const JSONViewerModule = {
  * @returns {string} The complete HTML output
  */
 export default async function jsonViewer(json, options = {}) {
-  const processedJSON = await customStringify(json);
+  const processedJSON = await stringifyPlus(json);
   return JSONViewerModule.generate(processedJSON, options);
 } 
