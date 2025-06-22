@@ -164,23 +164,28 @@ const JSONViewerModule = {
     }
 
     .json-viewer-number {
-      color: #0000ff;
+      color: #6c757d;
+      font-style: italic;
     }
 
     .json-viewer-boolean {
-      color: #0066cc;
+      color: #6c757d;
+      font-style: italic;
     }
 
     .json-viewer-null {
-      color: #666;
+      color: #6c757d;
+      font-style: italic;
     }
 
     .json-viewer-undefined {
-      color: #e000e0;
+      color: #6c757d;
+      font-style: italic;
     }
 
     .json-viewer-function {
-      color: #6f42c1;
+      color: #6c757d;
+      font-style: italic;
     }
 
     .json-viewer-type {
@@ -195,7 +200,8 @@ const JSONViewerModule = {
     }
 
     .json-viewer-date {
-      color: #008000;
+      color: #d63384;
+
     }
 
     .json-viewer-controls {
@@ -296,6 +302,18 @@ const JSONViewerModule = {
           if (value instanceof Date) return 'date';
           if (typeof value === 'string' && value === '[ undefined ]') return 'undefined';
           if (typeof value === 'string' && value.startsWith('[function') && value.endsWith(']')) return 'function';
+          if (typeof value === 'string') {
+            // Remove surrounding quotes if present, then check for date pattern
+            const cleanValue = value.replace(/^"|"$/g, '');
+            // Simple date detection: check if it looks like an ISO date string
+            if (cleanValue.length >= 20 && 
+                cleanValue.includes('T') && 
+                cleanValue.includes('-') && 
+                cleanValue.includes(':') && 
+                !isNaN(new Date(cleanValue).getTime())) {
+              return 'date';
+            }
+          }
           return typeof value;
         }
 
@@ -357,6 +375,10 @@ const JSONViewerModule = {
           if (value === null) {
             element.textContent = 'null';
             element.classList.add('json-viewer-null');
+          } else if (this.getType(value) === 'date') {
+            // For dates, show the original value but style as date
+            element.textContent = typeof value === 'string' ? value : \`"\${value}"\`;
+            element.classList.add('json-viewer-date');
           } else if (typeof value === 'string' && value === '[ undefined ]') {
             element.textContent = 'undefined';
             element.classList.add('json-viewer-undefined');
@@ -897,6 +919,8 @@ const JSONViewerModule = {
    */
   generate: (json, options = {}) => {
     const containerId = JSONViewerModule.generateId();
+    // If json is already a string (from stringifyPlus), use it directly
+    // Otherwise, stringify it
     const jsonString = typeof json === 'string' ? json : JSON.stringify(json);
     const escapedJsonString = jsonString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     // The title will be rendered by JS if present

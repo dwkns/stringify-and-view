@@ -23,7 +23,7 @@ export async function stringifyPlus(data) {
             return `"${value.toString()}"`;
         }
         if (value instanceof Date) {
-            return `"${value.toISOString()}"`;
+            return JSON.stringify(value);
         }
 
         // Handle circular references
