@@ -429,6 +429,24 @@ const JSONViewerModule = {
           }
 
           if (type === 'object' || type === 'array') {
+            if (count === 0) {
+              if (typeof key !== 'undefined' && key !== null) {
+                const keyElement = document.createElement('span');
+                keyElement.className = 'json-viewer-key';
+                keyElement.textContent = \`\${key}: \`;
+                header.appendChild(keyElement);
+              }
+              const typeLabel = this.createTypeLabel(type);
+              typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
+              header.appendChild(typeLabel);
+              
+              const valueElement = document.createElement('span');
+              valueElement.textContent = type === 'object' ? '{}' : '[]';
+              header.appendChild(valueElement);
+
+              node.appendChild(header);
+              return node;
+            }
             let nodePath = path;
             if (typeof key !== 'undefined' && key !== null) {
               const isArrayKey = typeof key === 'number' || (typeof key === 'string' && /^\d+$/.test(key));
