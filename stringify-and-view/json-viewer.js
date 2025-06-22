@@ -262,7 +262,6 @@ const JSONViewerModule = {
          * Creates a new JSON viewer instance
          * @param {Object} options - Configuration options
          * @param {boolean} [options.showTypes=true] - Whether to show type labels
-         * @param {boolean} [options.showCounts=true] - Whether to show count labels
          * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded by default
          * @param {boolean} [options.pathsOnHover=false] - Whether to show key path hover panel
          * @param {boolean} [options.showControls=true] - Whether to show controls
@@ -271,7 +270,6 @@ const JSONViewerModule = {
           this.container = container;
           this.options = {
             showTypes: options.showTypes === false ? false : false,
-            showCounts: options.showCounts === false ? false : false,
             defaultExpanded: options.defaultExpanded ?? false,
             pathsOnHover: options.pathsOnHover === true ? true : false,
             showControls: options.showControls === false ? false : true
@@ -485,6 +483,9 @@ const JSONViewerModule = {
             }
             const isExpanded = this.expandedNodes.has(nodePath) || this.options.defaultExpanded;
             
+            // Check if this is the root level (key is null/undefined)
+            const isRootLevel = typeof key === 'undefined' || key === null;
+            
             const toggle = this.createToggleButton();
             toggle.addEventListener('click', (e) => {
               if (this.isOptionKeyPressed) this.toggleAll(node);
@@ -596,12 +597,12 @@ const JSONViewerModule = {
             }
 
             const typeLabel = this.createTypeLabel(type);
-            typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
+            typeLabel.style.display = isRootLevel || this.options.showTypes ? 'inline' : 'none';
             header.appendChild(typeLabel);
 
-            if (count !== null) {
+            if (count !== null && type === 'array') {
               const countLabel = this.createCountLabel(count);
-              countLabel.style.display = this.options.showCounts ? 'inline' : 'none';
+              countLabel.style.display = 'inline';
               header.appendChild(countLabel);
             }
 
@@ -814,20 +815,6 @@ const JSONViewerModule = {
           typesControl.appendChild(typesCheckbox);
           typesControl.appendChild(document.createTextNode('Show Types'));
 
-          const countsControl = document.createElement('label');
-          countsControl.className = 'json-viewer-control';
-          countsControl.id = this.container.id + '-counts-control';
-          const countsCheckbox = document.createElement('input');
-          countsCheckbox.type = 'checkbox';
-          countsCheckbox.id = this.container.id + '-counts-checkbox';
-          countsCheckbox.checked = this.options.showCounts;
-          countsCheckbox.addEventListener('change', () => {
-            this.options.showCounts = countsCheckbox.checked;
-            this.updateDisplay();
-          });
-          countsControl.appendChild(countsCheckbox);
-          countsControl.appendChild(document.createTextNode('Show Counts'));
-
           // Show Paths on Hover control
           const pathsControl = document.createElement('label');
           pathsControl.className = 'json-viewer-control';
@@ -844,7 +831,6 @@ const JSONViewerModule = {
           pathsControl.appendChild(document.createTextNode('Show Paths on Hover'));
 
           controls.appendChild(typesControl);
-          controls.appendChild(countsControl);
           controls.appendChild(pathsControl);
           controlsWrapper.appendChild(controls);
           return controlsWrapper;
@@ -855,22 +841,15 @@ const JSONViewerModule = {
          */
         updateDisplay() {
           const typeLabels = this.container.querySelectorAll('.json-viewer-type');
-          const countLabels = this.container.querySelectorAll('.json-viewer-count');
 
           typeLabels.forEach(label => {
             label.style.display = this.options.showTypes ? 'inline' : 'none';
           });
 
-          countLabels.forEach(label => {
-            label.style.display = this.options.showCounts ? 'inline' : 'none';
-          });
-
           // Update checkbox states
           const typesCheckbox = this.container.querySelector('#' + this.container.id + '-types-checkbox');
-          const countsCheckbox = this.container.querySelector('#' + this.container.id + '-counts-checkbox');
           const pathsCheckbox = this.container.querySelector('#' + this.container.id + '-paths-checkbox');
           if (typesCheckbox) typesCheckbox.checked = this.options.showTypes;
-          if (countsCheckbox) countsCheckbox.checked = this.options.showCounts;
           if (pathsCheckbox) pathsCheckbox.checked = this.options.pathsOnHover;
         }
 
@@ -942,7 +921,6 @@ const JSONViewerModule = {
  * @param {*} json - The JSON data to display
  * @param {Object} options - Viewer configuration options
  * @param {boolean} [options.showTypes=true] - Whether to show type labels
- * @param {boolean} [options.showCounts=true] - Whether to show count labels
  * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded 
  * @returns {string} The complete HTML output
  */

@@ -15,7 +15,7 @@ title: "JSON Viewer"
     {% set number = 123 %}
     {% set array = ["string 1", "string 2", 3, 4 , {a:"a"} ] %}
     {% set object = {a: "a", b:"b"} %}
-
+ 
 
     {{  string | jsonViewer({ title: "string"}) | safe }}
     {{  number | jsonViewer({ title: "number"}) | safe }}
