@@ -175,6 +175,14 @@ const JSONViewerModule = {
       color: #666;
     }
 
+    .json-viewer-undefined {
+      color: #e000e0;
+    }
+
+    .json-viewer-function {
+      color: #6f42c1;
+    }
+
     .json-viewer-type {
       color: #666;
       font-size: 0.8em;
@@ -286,6 +294,8 @@ const JSONViewerModule = {
           if (value === null) return 'null';
           if (Array.isArray(value)) return 'array';
           if (value instanceof Date) return 'date';
+          if (typeof value === 'string' && value === '[ undefined ]') return 'undefined';
+          if (typeof value === 'string' && value.startsWith('[function') && value.endsWith(']')) return 'function';
           return typeof value;
         }
 
@@ -347,6 +357,12 @@ const JSONViewerModule = {
           if (value === null) {
             element.textContent = 'null';
             element.classList.add('json-viewer-null');
+          } else if (typeof value === 'string' && value === '[ undefined ]') {
+            element.textContent = 'undefined';
+            element.classList.add('json-viewer-undefined');
+          } else if (typeof value === 'string' && value.startsWith('[function') && value.endsWith(']')) {
+            element.textContent = value;
+            element.classList.add('json-viewer-function');
           } else if (typeof value === 'string') {
             element.textContent = \`"\${value}"\`;
             element.classList.add('json-viewer-string');
@@ -661,9 +677,11 @@ const JSONViewerModule = {
               header.appendChild(keyWrapper);
             }
 
-            const typeLabel = this.createTypeLabel(type);
-            typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
-            header.appendChild(typeLabel);
+            if (type !== 'undefined') {
+                const typeLabel = this.createTypeLabel(type);
+                typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
+                header.appendChild(typeLabel);
+            }
 
             header.appendChild(this.createValueElement(value));
             node.appendChild(header);
@@ -861,7 +879,7 @@ const JSONViewerModule = {
    */
   generate: (json, options = {}) => {
     const containerId = JSONViewerModule.generateId();
-    const jsonString = typeof json === 'string' ? JSON.stringify(JSON.parse(json)) : JSON.stringify(json);
+    const jsonString = typeof json === 'string' ? json : JSON.stringify(json);
     const escapedJsonString = jsonString.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     // The title will be rendered by JS if present
     return `<style>${JSONViewerModule.getStyles()}</style><div id="${containerId}" class="json-viewer-container" data-json='${escapedJsonString}' data-title='${options.title ? options.title.replace(/'/g, '&#39;').replace(/"/g, '&quot;') : ''}'></div><script>${JSONViewerModule.getScript(containerId, options)}</script>`;
