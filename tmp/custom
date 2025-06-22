@@ -1,0 +1,994 @@
+{
+  "inputPath": "./src/posts/ai-ethics.md",
+  "parsed": {
+    "root": "",
+    "dir": "./src/posts",
+    "base": "ai-ethics.md",
+    "ext": ".md",
+    "name": "ai-ethics"
+  },
+  "extraOutputSubdirectory": "",
+  "templateData": {
+    "templateConfig": {
+      "overrides": {},
+      "projectConfigPaths": [
+        ".eleventy.js",
+        "eleventy.config.js",
+        "eleventy.config.mjs",
+        "eleventy.config.cjs"
+      ],
+      "customRootConfig": "[ null ]",
+      "hasConfigMerged": true,
+      "isEsm": true,
+      "logger": {
+        "outputStream": {
+          "_events": {
+            "close": "[ undefined ]",
+            "error": "[ undefined ]",
+            "data": "[ undefined ]",
+            "end": "[ undefined ]",
+            "readable": "[ undefined ]"
+          },
+          "_readableState": {
+            "highWaterMark": 65536,
+            "buffer": [],
+            "bufferIndex": 0,
+            "length": 0,
+            "pipes": [],
+            "awaitDrainWriters": "[ null ]"
+          },
+          "_read": "[function read]",
+          "_maxListeners": "[ undefined ]"
+        }
+      },
+      "directories": {
+        "inputFile": "[ undefined ]",
+        "inputGlob": "[ undefined ]"
+      },
+      "rootConfig": {
+        "templateFormats": [
+          "liquid",
+          "md",
+          "njk",
+          "html",
+          "11ty.js"
+        ],
+        "pathPrefix": "/",
+        "markdownTemplateEngine": "liquid",
+        "htmlTemplateEngine": "liquid",
+        "dataFileSuffixes": [
+          ".11tydata",
+          ""
+        ],
+        "dataFileDirBaseNameOverride": false,
+        "keys": {
+          "package": "pkg",
+          "layout": "layout",
+          "permalink": "permalink",
+          "permalinkRoot": "permalinkBypassOutputDir",
+          "engineOverride": "templateEngineOverride",
+          "computed": "eleventyComputed",
+          "dataSchema": "eleventyDataSchema"
+        },
+        "dir": {
+          "input": ".",
+          "includes": "_includes",
+          "data": "_data",
+          "output": "_site"
+        },
+        "nunjucksFilters": {}
+      },
+      "config": {
+        "templateFormats": [
+          "liquid",
+          "md",
+          "njk",
+          "html",
+          "11ty.js"
+        ],
+        "pathPrefix": "/",
+        "markdownTemplateEngine": "liquid",
+        "htmlTemplateEngine": "njk",
+        "dataFileSuffixes": "[Circular root.templateData.templateConfig.config.dataFileSuffixes]",
+        "dataFileDirBaseNameOverride": false,
+        "keys": {
+          "package": "pkg",
+          "layout": "layout",
+          "permalink": "permalink",
+          "permalinkRoot": "permalinkBypassOutputDir",
+          "engineOverride": "templateEngineOverride",
+          "computed": "eleventyComputed",
+          "dataSchema": "eleventyDataSchema"
+        },
+        "dir": {
+          "input": "src",
+          "includes": "_includes",
+          "data": "_data",
+          "output": "dist"
+        },
+        "nunjucksFilters": {
+          "inputPathToUrl": "[function fn]",
+          "slug": "[function fn]",
+          "slugify": "[function fn]",
+          "url": "[function fn]",
+          "log": "[function fn]",
+          "getCollectionItemIndex": "[function fn]",
+          "getCollectionItem": "[function fn]",
+          "getPreviousCollectionItem": "[function fn]",
+          "getNextCollectionItem": "[function fn]"
+        },
+        "directories": {
+          "input": "./src/",
+          "inputFile": "[ undefined ]",
+          "inputGlob": "[ undefined ]",
+          "data": "./src/_data/",
+          "includes": "./src/_includes/",
+          "layouts": "[ undefined ]",
+          "output": "./dist/"
+        },
+        "transforms": {
+          "@11ty/eleventy-bundle": "[function fn]",
+          "@11ty/eleventy/html-transformer": "[function fn]",
+          "@11ty/eleventy-bundle/delayed": "[function fn]"
+        },
+        "linters": {},
+        "preprocessors": {},
+        "globalData": {},
+        "layoutAliases": {},
+        "layoutResolution": true,
+        "passthroughCopiesHtmlRelative": {},
+        "passthroughCopies": {},
+        "liquidOptions": {},
+        "liquidTags": {},
+        "liquidFilters": {
+          "inputPathToUrl": "[function fn]",
+          "slug": "[function fn]",
+          "slugify": "[function fn]",
+          "url": "[function fn]",
+          "log": "[function fn]",
+          "getCollectionItemIndex": "[function fn]",
+          "getCollectionItem": "[function fn]",
+          "getPreviousCollectionItem": "[function fn]",
+          "getNextCollectionItem": "[function fn]",
+          "renderTransforms": "[function fn]",
+          "jsonViewer": "[function fn]"
+        },
+        "liquidShortcodes": {
+          "getBundle": "[function fn]",
+          "getBundleFileUrl": "[function fn]",
+          "console": "[function fn]"
+        },
+        "liquidPairedShortcodes": {},
+        "liquidParameterParsing": "legacy",
+        "nunjucksEnvironmentOptions": {
+          "dev": true,
+          "autoescape": true,
+          "throwOnUndefined": false,
+          "trimBlocks": false,
+          "lstripBlocks": false
+        },
+        "nunjucksPrecompiledTemplates": {},
+        "nunjucksAsyncFilters": {
+          "renderTransforms": "[function fn]",
+          "jsonViewer": "[function fn]"
+        },
+        "nunjucksTags": {},
+        "nunjucksGlobals": {},
+        "nunjucksAsyncShortcodes": {},
+        "nunjucksShortcodes": {
+          "getBundle": "[function fn]",
+          "getBundleFileUrl": "[function fn]",
+          "console": "[function fn]"
+        },
+        "nunjucksAsyncPairedShortcodes": {},
+        "nunjucksPairedShortcodes": {},
+        "javascriptFunctions": {
+          "getBundle": "[function fn]",
+          "getBundleFileUrl": "[function fn]",
+          "inputPathToUrl": "[function fn]",
+          "slug": "[function fn]",
+          "slugify": "[function fn]",
+          "url": "[function fn]",
+          "log": "[function fn]",
+          "getCollectionItemIndex": "[function fn]",
+          "getCollectionItem": "[function fn]",
+          "getPreviousCollectionItem": "[function fn]",
+          "getNextCollectionItem": "[function fn]",
+          "renderTransforms": "[function fn]",
+          "jsonViewer": "[function fn]",
+          "console": "[function fn]"
+        },
+        "javascriptShortcodes": {
+          "getBundle": "[function fn]",
+          "getBundleFileUrl": "[function fn]",
+          "console": "[function fn]"
+        },
+        "javascriptPairedShortcodes": {},
+        "javascriptFilters": {
+          "inputPathToUrl": "[function fn]",
+          "slug": "[function fn]",
+          "slugify": "[function fn]",
+          "url": "[function fn]",
+          "log": "[function fn]",
+          "getCollectionItemIndex": "[function fn]",
+          "getCollectionItem": "[function fn]",
+          "getPreviousCollectionItem": "[function fn]",
+          "getNextCollectionItem": "[function fn]",
+          "renderTransforms": "[function fn]",
+          "jsonViewer": "[function fn]"
+        },
+        "markdownHighlighter": "[ null ]",
+        "libraryOverrides": {},
+        "dynamicPermalinks": true,
+        "useGitIgnore": true,
+        "ignores": {},
+        "watchIgnores": {},
+        "dataDeepMerge": true,
+        "watchJavaScriptDependencies": true,
+        "additionalWatchTargets": [],
+        "watchTargetsConfigReset": {},
+        "serverOptions": {},
+        "chokidarConfig": {},
+        "watchThrottleWaitTime": 0,
+        "frontMatterParsingOptions": {
+          "engines": {
+            "yaml": "[function bound load$1]",
+            "javascript": "[function default]",
+            "jsLegacy": {
+              "parse": "[function parse]",
+              "stringify": "[function stringify]"
+            },
+            "node": "[function node]"
+          },
+          "filePath": "./src/posts/ai-ethics.md"
+        },
+        "dataExtensions": {},
+        "extensionMap": {},
+        "quietMode": false,
+        "events": {
+          "_events": {
+            "eleventy.layouts": "[function bound onceWrapper]",
+            "eleventy.before": [
+              "[function anonymous]",
+              "[function anonymous]"
+            ],
+            "eleventy.contentMap": "[function anonymous]",
+            "eleventy#copy": "[function anonymous]",
+            "eleventy#beforerender": "[function anonymous]",
+            "eleventy#render": "[function anonymous]",
+            "eleventy#templateModified": "[function anonymous]"
+          },
+          "_eventsCount": 7,
+          "_maxListeners": 25
+        },
+        "benchmarkManager": {
+          "benchmarkGroups": {
+            "Configuration": {
+              "benchmarks": {
+                ""getBundle" Universal Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundle" Liquid Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundle" JavaScript Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundle" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundle" Nunjucks Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundleFileUrl" Universal Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundleFileUrl" Liquid Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundleFileUrl" JavaScript Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundleFileUrl" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getBundleFileUrl" Nunjucks Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""@11ty/eleventy-bundle" Transform": {
+                  "timeSpent": 0.01783299999999599,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                ""inputPathToUrl" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""inputPathToUrl" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""inputPathToUrl" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""inputPathToUrl" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""inputPathToUrl" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slug" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slug" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slug" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slug" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slug" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slugify" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slugify" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slugify" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slugify" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""slugify" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""url" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""url" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""url" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""url" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""url" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""log" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""log" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""log" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""log" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""log" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItemIndex" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItemIndex" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItemIndex" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItemIndex" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItemIndex" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItem" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItem" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItem" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItem" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getCollectionItem" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getPreviousCollectionItem" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getPreviousCollectionItem" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getPreviousCollectionItem" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getPreviousCollectionItem" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getPreviousCollectionItem" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getNextCollectionItem" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getNextCollectionItem" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getNextCollectionItem" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getNextCollectionItem" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""getNextCollectionItem" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""renderTransforms" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""renderTransforms" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""renderTransforms" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""renderTransforms" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""renderTransforms" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""@11ty/eleventy/html-transformer" Transform": {
+                  "timeSpent": 0.08404200000001083,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                ""jsonViewer" Universal Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""jsonViewer" Liquid Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""jsonViewer" JavaScript Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""jsonViewer" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""jsonViewer" Nunjucks Filter": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""@11ty/eleventy-bundle/delayed" Transform": {
+                  "timeSpent": 0.013833000000033735,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                ""console" Universal Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""console" Liquid Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""console" JavaScript Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""console" JavaScript Function": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                },
+                ""console" Nunjucks Shortcode": {
+                  "timeSpent": 0,
+                  "timesCalled": 0,
+                  "beforeTimers": []
+                }
+              },
+              "isVerbose": true,
+              "logger": {
+                "outputStream": {
+                  "_events": {
+                    "close": "[ undefined ]",
+                    "error": "[ undefined ]",
+                    "data": "[ undefined ]",
+                    "end": "[ undefined ]",
+                    "readable": "[ undefined ]"
+                  },
+                  "_readableState": {
+                    "highWaterMark": 65536,
+                    "buffer": [],
+                    "bufferIndex": 0,
+                    "length": 0,
+                    "pipes": [],
+                    "awaitDrainWriters": "[ null ]"
+                  },
+                  "_read": "[function read]",
+                  "_maxListeners": "[ undefined ]"
+                }
+              },
+              "minimumThresholdMs": 50,
+              "minimumThresholdPercent": 8
+            },
+            "Aggregate": {
+              "benchmarks": {
+                "Configuration addPlugin": {
+                  "timeSpent": 1.7674569999999221,
+                  "timesCalled": 5,
+                  "beforeTimers": []
+                },
+                "Processing plugins in config": {
+                  "timeSpent": 0.17625000000001023,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "Searching the file system (templates)": {
+                  "timeSpent": 4.968084000000005,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "Searching the file system (data)": {
+                  "timeSpent": 0.44924999999997794,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "Template Read": {
+                  "timeSpent": 0.6781249999999659,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                "(count) getOutputLocations": {
+                  "timeSpent": 0,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                "Template Compile Content": {
+                  "timeSpent": 0.6205410000000597,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                "> Compile Content > ./src/index.njk": {
+                  "timeSpent": 0.08087499999999181,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "Render": {
+                  "timeSpent": 4.267208000000039,
+                  "timesCalled": 2,
+                  "beforeTimers": []
+                },
+                "> Render Content > ./src/index.njk": {
+                  "timeSpent": 2.309792000000016,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "(count) Template Compile Cache Miss": {
+                  "timeSpent": 0,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "> Compile Content > ./src/posts/ai-ethics.md": {
+                  "timeSpent": 0.538250000000005,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                },
+                "> Render Content > ./src/posts/ai-ethics.md": {
+                  "timeSpent": 1.9558749999999918,
+                  "timesCalled": 1,
+                  "beforeTimers": []
+                }
+              },
+              "isVerbose": false,
+              "logger": {
+                "outputStream": {
+                  "_events": {
+                    "close": "[ undefined ]",
+                    "error": "[ undefined ]",
+                    "data": "[ undefined ]",
+                    "end": "[ undefined ]",
+                    "readable": "[ undefined ]"
+                  },
+                  "_readableState": {
+                    "highWaterMark": 65536,
+                    "buffer": [],
+                    "bufferIndex": 0,
+                    "length": 0,
+                    "pipes": [],
+                    "awaitDrainWriters": "[ null ]"
+                  },
+                  "_read": "[function read]",
+                  "_maxListeners": "[ undefined ]"
+                }
+              },
+              "minimumThresholdMs": 50,
+              "minimumThresholdPercent": 8
+            },
+            "Data": {
+              "benchmarks": {},
+              "isVerbose": true,
+              "logger": {
+                "outputStream": {
+                  "_events": {
+                    "close": "[ undefined ]",
+                    "error": "[ undefined ]",
+                    "data": "[ undefined ]",
+                    "end": "[ undefined ]",
+                    "readable": "[ undefined ]"
+                  },
+                  "_readableState": {
+                    "highWaterMark": 65536,
+                    "buffer": [],
+                    "bufferIndex": 0,
+                    "length": 0,
+                    "pipes": [],
+                    "awaitDrainWriters": "[ null ]"
+                  },
+                  "_read": "[function read]",
+                  "_maxListeners": "[ undefined ]"
+                }
+              },
+              "minimumThresholdMs": 50,
+              "minimumThresholdPercent": 8
+            }
+          },
+          "isVerbose": true,
+          "start": 227.431583
+        },
+        "plugins": [
+          {
+            "plugin": "[function anonymous]",
+            "options": {},
+            "pluginNamespace": ""
+          },
+          {
+            "plugin": "[function HtmlRelativeCopyPlugin]",
+            "options": {},
+            "pluginNamespace": ""
+          },
+          {
+            "plugin": "[function logToConsole]",
+            "options": {},
+            "pluginNamespace": ""
+          }
+        ],
+        "useTemplateCache": true,
+        "precompiledCollections": {},
+        "dataFilterSelectors": {},
+        "libraryAmendments": {},
+        "serverPassthroughCopyBehavior": "copy",
+        "urlTransforms": [],
+        "virtualTemplates": {},
+        "freezeReservedData": true,
+        "customDateParsing": {},
+        "errorReporting": {},
+        "templateHandling": {},
+        "uses": {
+          "isEsm": true
+        }
+      },
+      "verbose": true
+    },
+    "config": "[Circular root.templateData.config]",
+    "benchmarks": {
+      "data": "[Circular root.templateData.benchmarks.data]",
+      "aggregate": "[Circular root.templateData.benchmarks.aggregate]"
+    },
+    "rawImports": {
+      "pkg": {
+        "name": "demo-project",
+        "version": "1.0.0",
+        "main": "app/index.js",
+        "license": "MIT",
+        "devDependencies": {
+          "vitest": "^3.2.1"
+        },
+        "author": "dazza",
+        "type": "module",
+        "scripts": {
+          "clean": "npx rimraf dist build",
+          "dev": "npm run clean && eleventy --serve --quiet",
+          "test": "vitest run"
+        },
+        "dependencies": {
+          "@11ty/eleventy": "^3.1.1",
+          "eleventy-plugin-console-plus": "^0.1.1"
+        }
+      }
+    },
+    "globalData": {},
+    "templateDirectoryData": {
+      "./src/index.njk": {},
+      "./src/posts/ai-ethics.md": {}
+    },
+    "isEsm": true,
+    "initialGlobalData": {
+      "templateConfig": "[Circular root.templateData.initialGlobalData.templateConfig]",
+      "config": "[Circular root.templateData.initialGlobalData.config]"
+    },
+    "_extensionMap": {
+      "templateConfig": "[Circular root.templateData._extensionMap.templateConfig]",
+      "_spiderJsDepsCache": {},
+      "formatKeys": [
+        "liquid",
+        "md",
+        "njk",
+        "html",
+        "11ty.js"
+      ],
+      "unfilteredFormatKeys": [
+        "liquid",
+        "md",
+        "njk",
+        "html",
+        "11ty.js"
+      ],
+      "_extensionToKeyMap": {
+        "md": {
+          "key": "md",
+          "extension": "md"
+        },
+        "html": {
+          "key": "html",
+          "extension": "html"
+        },
+        "njk": {
+          "key": "njk",
+          "extension": "njk"
+        },
+        "liquid": {
+          "key": "liquid",
+          "extension": "liquid"
+        },
+        "11ty.js": {
+          "key": "11ty.js",
+          "extension": "11ty.js"
+        },
+        "11ty.cjs": {
+          "key": "11ty.js",
+          "extension": "11ty.cjs"
+        },
+        "11ty.mjs": {
+          "key": "11ty.js",
+          "extension": "11ty.mjs"
+        }
+      },
+      "validTemplateLanguageKeys": [
+        "liquid",
+        "md",
+        "njk",
+        "html",
+        "11ty.js"
+      ],
+      "passthroughCopyKeys": []
+    },
+    "_env": {
+      "source": "script",
+      "runMode": "build",
+      "config": "/Users/dazza/Desktop/customStringify/eleventy.config.js",
+      "root": "/Users/dazza/Desktop/customStringify"
+    },
+    "fileSystemSearch": {
+      "inputs": {
+        "templates["src /**/*.{liquid,md,njk,html,
+          11ty.js,
+          11ty.cjs,
+          11ty.mjs
+        }"]{"ignore":["node_modules /**",".env","dist","dist/**","src/_includes/**","src/_data/**","**/node_modules /**",".git/**"]}":{"input":["src/**/*.{liquid,md,njk,html,
+          11ty.js,
+          11ty.cjs,
+          11ty.mjs
+        }"],"options":{"ignore":["node_modules /**",".env","dist","dist/**","src/_includes/**","src/_data/**","**/node_modules /**",".git/**"]}},"global-data["src/_data/**/*.{json,mjs,cjs,js
+        }"]{}": {
+          "input": [
+            "src/_data/**/*.{json,mjs,cjs,js}"
+          ],
+          "options": {}
+        }
+      },
+      "outputs": {
+        "templates["src /**/*.{liquid,md,njk,html,
+          11ty.js,
+          11ty.cjs,
+          11ty.mjs
+        }"]{"ignore":["node_modules /**",".env","dist","dist/**","src/_includes/**","src/_data/**","**/node_modules /**",".git/**"]}":{},"global-data["src/_data/**/*.{json,mjs,cjs,js
+        }"]{}": {}
+      },
+      "promises": {
+        "templates["src /**/*.{liquid,md,njk,html,
+          11ty.js,
+          11ty.cjs,
+          11ty.mjs
+        }"]{"ignore":["node_modules /**",".env","dist","dist/**","src/_includes/**","src/_data/**","**/node_modules /**",".git/**"]}":{},"global-data["src/_data/**/*.{json,mjs,cjs,js
+        }"]{}": {}
+      },
+      "count": 2
+    },
+    "configApiGlobalData": {},
+    "pathCache": []
+  },
+  "fileSlug": {
+    "inputPath": "posts/ai-ethics.md",
+    "cleanInputPath": "posts/ai-ethics.md",
+    "dirs": [
+      "posts"
+    ],
+    "parsed": {
+      "root": "",
+      "dir": "posts",
+      "base": "ai-ethics.md",
+      "ext": ".md",
+      "name": "ai-ethics"
+    },
+    "filenameNoExt": "ai-ethics"
+  },
+  "fileSlugStr": "ai-ethics",
+  "filePathStem": "/posts/ai-ethics",
+  "linters": [],
+  "transforms": "[Circular root.transforms]",
+  "isVerbose": true,
+  "isDryRun": false,
+  "writeCount": 0,
+  "outputFormat": "json",
+  "behavior": {
+    "render": true,
+    "write": true,
+    "outputFormat": "json",
+    "config": "[Circular root.behavior.config]",
+    "renderableOverride": "[ undefined ]"
+  },
+  "renderCount": 1,
+  "_dataCache": {},
+  "inputContent": {},
+  "readingPromise": {},
+  "_frontMatterDataCache": {},
+  "_stats": {},
+  "_usePermalinkRoot": "[ undefined ]",
+  "_cacheRenderedPromise": {},
+  "_cacheRenderedTransformsAndLayoutsPromise": {}
+}
