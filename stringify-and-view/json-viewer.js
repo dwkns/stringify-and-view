@@ -481,10 +481,10 @@ const JSONViewerModule = {
               const isArrayKey = typeof key === 'number' || (typeof key === 'string' && /^\d+$/.test(key));
               nodePath = buildPath(path, key, isArrayKey);
             }
-            const isExpanded = this.expandedNodes.has(nodePath) || this.options.defaultExpanded;
             
             // Check if this is the root level (key is null/undefined)
             const isRootLevel = typeof key === 'undefined' || key === null;
+            const isExpanded = isRootLevel ? true : (this.expandedNodes.has(nodePath) || this.options.defaultExpanded);
             
             const toggle = this.createToggleButton();
             toggle.addEventListener('click', (e) => {
