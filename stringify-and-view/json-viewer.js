@@ -188,6 +188,11 @@ const JSONViewerModule = {
       font-style: italic;
     }
 
+    .json-viewer-circ-ref {
+      color: #dc3545;
+      font-style: italic;
+    }
+
     .json-viewer-type {
       color: #666;
       font-size: 0.8em;
@@ -302,6 +307,7 @@ const JSONViewerModule = {
           if (value instanceof Date) return 'date';
           if (typeof value === 'string' && value === '[ undefined ]') return 'undefined';
           if (typeof value === 'string' && value.startsWith('[function') && value.endsWith(']')) return 'function';
+          if (typeof value === 'string' && value.startsWith('[Circular Ref:')) return 'Circular Ref';
           if (typeof value === 'string') {
             // Remove surrounding quotes if present, then check for date pattern
             const cleanValue = value.replace(/^"|"$/g, '');
@@ -385,6 +391,9 @@ const JSONViewerModule = {
           } else if (typeof value === 'string' && value.startsWith('[function') && value.endsWith(']')) {
             element.textContent = value;
             element.classList.add('json-viewer-function');
+          } else if (typeof value === 'string' && value.startsWith('[Circular Ref:')) {
+            element.textContent = value;
+            element.classList.add('json-viewer-circ-ref');
           } else if (typeof value === 'string') {
             element.textContent = \`"\${value}"\`;
             element.classList.add('json-viewer-string');
