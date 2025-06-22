@@ -11,9 +11,7 @@ export async function stringifyPlus(data) {
     function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false) {
         // Handle special values
         if (value === undefined) return '"[ undefined ]"';
-        if (value === null) {
-            return 'null';
-        }
+        if (value === null) { return 'null' }
         if (typeof value === 'function') {
             const name = value.name && value.name !== 'anonymousFunction' ? value.name : 'anonymous';
             return `"[function ${name}]"`;
@@ -32,7 +30,7 @@ export async function stringifyPlus(data) {
         if (typeof value === 'object') {
             if (seen.has(value)) {
                 // Output the current path where the reference is being made
-                return `"[Circular ${path}]"`;
+                return `"[Circular Ref: ${path}]"`;
             }
             seen.set(value, path);
 

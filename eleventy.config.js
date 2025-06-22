@@ -43,7 +43,9 @@ export default (eleventyConfig) => {
 
   // Add the JSON viewer filter
   eleventyConfig.addFilter('jsonViewer', jsonViewer);
-  eleventyConfig.addPlugin(logToConsole, {})
+  eleventyConfig.addPlugin(logToConsole, {
+    logToTerminal: false
+  })
 };
 
 export const config = {

@@ -10,9 +10,9 @@ title: "JSON Viewer"
 </head>
 <body>
     <h1>{{title}}</h1>
-  
+
     
-    {{ collections.all | jsonViewer({
+    {{ collections.all[0].data | jsonViewer({
         title: "collections.all",
         showTypes: true,
         showCounts: false,
@@ -21,7 +21,7 @@ title: "JSON Viewer"
         showControls: true 
     }) | safe }}
 
-    {% console collections.all%}
+    {% console collections.all[0].data %}
   
    
 </body>
