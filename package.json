@@ -1,21 +1,22 @@
 {
-  "name": "demo-project",
-  "version": "1.0.0",
+  "name": "stringify-and-view",
+  "version": "0.0.1",
   "main": "app/index.js",
   "license": "MIT",
   "author": "dazza",
   "type": "module",
   "scripts": {
     "dev": "rimraf dist build && eleventy --serve --quiet",
+    "build": "eleventy ",
     "test": "vitest run"
   },
   "dependencies": {
+    "eleventy-plugin-console-plus": "^0.1.1"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.1",
     "jsdom": "^26.1.0",
     "rimraf": "^6.0.1",
-    "eleventy-plugin-console-plus": "^0.1.1",
     "vitest": "^3.2.1"
    
   }
