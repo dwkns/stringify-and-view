@@ -1,21 +1,34 @@
 /**
- * stringifyPlus function that handles special cases and circular references
+ * Enhanced JSON stringifier with support for special values, circular references, and custom options.
+ * Handles functions, symbols, BigInts, Dates, and Eleventy-specific quirks.
+ *
  * @module stringify-plus
  * @param {any} data - The data to stringify
- * @param {Object} options - Optional configuration options
+ * @param {Object} [options] - Optional configuration options
+ * @param {number} [options.maxCircularDepth=1] - How many times to repeat circular references before replacing with a marker
+ * @param {boolean} [options.removeTemplate=false] - If true, replaces any 'template' key with a placeholder
  * @returns {Promise<string>} The compact stringified data
  */
 export async function stringifyPlus(data, options = {}) {
-    // Use a WeakMap to track object paths for circular reference reporting
+    // Tracks the first path where each object is seen (for circular reference reporting)
     const seen = new WeakMap();
-    // Use a WeakMap to track how many times each object has been stringified in a circular context
+    // Tracks how many times each object has been stringified in a circular context
     const circularDepths = new WeakMap();
     const maxCircularDepth = options.maxCircularDepth ?? 1;
     const removeTemplate = options.removeTemplate ?? false;
-    
 
+    /**
+     * Helper to stringify a value, handling all special cases and recursion.
+     * @param {any} value - The value to stringify
+     * @param {string} path - The current path in the object tree
+     * @param {boolean} parentIsRoot - True if the parent is the root object
+     * @param {boolean} inArray - True if the value is inside an array
+     * @param {Set<object>} ancestors - Set of ancestor objects for circular detection
+     * @param {string|null} parentKey - The key of the parent property
+     * @returns {string} - The stringified value
+     */
     function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false, ancestors = new Set(), parentKey = null) {
-        // If the parent key is 'template' and removeTemplate is true, replace value
+        // Remove 'template' keys if requested
         if (removeTemplate && parentKey === 'template') {
             return '"Removed for performance reasons"';
         }
@@ -23,10 +36,12 @@ export async function stringifyPlus(data, options = {}) {
         if (removeTemplate && parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1 && Object.keys(value)[0] === 'template') {
             return '{"template":"Removed for performance reasons"}';
         }
-        // Handle special values
+
+        // Handle special primitive values
         if (value === undefined) return '"[ undefined ]"';
-        if (value === null) { return 'null' }
+        if (value === null) return 'null';
         if (typeof value === 'function') {
+            // Name functions if possible
             const name = value.name && value.name !== 'anonymousFunction' ? value.name : 'anonymous';
             return `"[function ${name}]"`;
         }
@@ -42,101 +57,99 @@ export async function stringifyPlus(data, options = {}) {
 
         // Handle objects and arrays
         if (typeof value === 'object') {
-            // True circular reference: object is in the ancestor chain
+            // Detect circular references
             if (ancestors.has(value)) {
                 // Count how many times we've seen this object in a circular context
                 const count = circularDepths.get(value) || 0;
                 if (count < maxCircularDepth) {
                     circularDepths.set(value, count + 1);
                     // Recursively output the object/array again
-                    if (Array.isArray(value)) {
-                        const elements = value.map((item, index) =>
-                            stringifyPlusInner(item, `${path}[${index}]`, false, true, new Set([...ancestors, value]), null)
-                        );
-                        return `[${elements.join(',')}]`;
-                    }
-                    const keys = Object.keys(value);
-                    const pairs = keys.map(key => {
-                        let val = value[key];
-                        if (removeTemplate && key === 'template') {
-                            return `${JSON.stringify(key)}:"Removed for performance reasons"`;
-                        }
-                        if (val === undefined) {
-                            return `${JSON.stringify(key)}:"[ undefined ]"`;
-                        }
-                        if (val === null) {
-                            return `${JSON.stringify(key)}:null`;
-                        }
-                        if (typeof val === 'function') {
-                            const name = val.name && val.name !== 'anonymousFunction' ? val.name : 'anonymous';
-                            return `${JSON.stringify(key)}:"[function ${name}]"`;
-                        }
-                        if (typeof val === 'symbol') {
-                            return `${JSON.stringify(key)}:"[Symbol ${val.description || ''}]"`;
-                        }
-                        if (typeof val === 'bigint') {
-                            return `${JSON.stringify(key)}:"${val.toString()}"`;
-                        }
-                        return `${JSON.stringify(key)}:${stringifyPlusInner(val, `${path}.${key}`, false, false, new Set([...ancestors, value]), key)}`;
-                    });
-                    return `{${pairs.join(',')}}`;
+                    return Array.isArray(value)
+                        ? stringifyArray(value, path, ancestors)
+                        : stringifyObject(value, path, ancestors);
                 } else {
                     // Output the path where the reference originated (first seen)
                     return `"[Circular Ref: ${seen.get(value) || path}]"`;
                 }
             }
-            // Not a circular reference, but track first seen path for reporting
+            // Not a circular reference, track first seen path
             if (!seen.has(value)) seen.set(value, path);
-            // Set needsCheck to false if present
+            // Eleventy-specific: set needsCheck to false if present
             if (Object.prototype.hasOwnProperty.call(value, 'needsCheck')) {
                 value.needsCheck = false;
             }
-            // Handle arrays
-            if (Array.isArray(value)) {
-                const elements = value.map((item, index) =>
-                    stringifyPlusInner(item, `${path}[${index}]`, false, true, new Set([...ancestors, value]), null)
-                );
-                return `[${elements.join(',')}]`;
-            }
-            // Handle objects
-            const keys = Object.keys(value);
-            const pairs = keys.map(key => {
-                if (removeTemplate && key === 'template') {
-                    return `${JSON.stringify(key)}:"Removed for performance reasons"`;
-                }
-                let val = value[key];
-                if (val === undefined) {
-                    return `${JSON.stringify(key)}:"[ undefined ]"`;
-                }
-                if (val === null) {
-                    return `${JSON.stringify(key)}:null`;
-                }
-                if (typeof val === 'function') {
-                    const name = val.name && val.name !== 'anonymousFunction' ? val.name : 'anonymous';
-                    return `${JSON.stringify(key)}:"[function ${name}]"`;
-                }
-                if (typeof val === 'symbol') {
-                    return `${JSON.stringify(key)}:"[Symbol ${val.description || ''}]"`;
-                }
-                if (typeof val === 'bigint') {
-                    return `${JSON.stringify(key)}:"${val.toString()}"`;
-                }
-                return `${JSON.stringify(key)}:${stringifyPlusInner(val, `${path}.${key}`, false, false, new Set([...ancestors, value]), key)}`;
-            });
-            return `{${pairs.join(',')}}`;
+            // Handle arrays and objects
+            return Array.isArray(value)
+                ? stringifyArray(value, path, ancestors)
+                : stringifyObject(value, path, ancestors);
         }
 
         // Handle primitive values
         if (typeof value === 'number') {
+            // JSON.stringify outputs null for non-finite numbers
             return Number.isFinite(value) ? value.toString() : 'null';
         }
         if (typeof value === 'string') return JSON.stringify(value);
         if (typeof value === 'boolean') return value.toString();
 
-        // For any other type that can't be automatically stringified
+        // Fallback for unknown types
         return `"[${typeof value} ${value?.constructor?.name || ''}]"`;
     }
 
-    let json = stringifyPlusInner(data);
-    return json;
+    /**
+     * Helper to stringify arrays, handling circular references and special values.
+     * @param {Array} arr - The array to stringify
+     * @param {string} path - The current path in the object tree
+     * @param {Set<object>} ancestors - Set of ancestor objects for circular detection
+     * @returns {string}
+     */
+    function stringifyArray(arr, path, ancestors) {
+        const nextAncestors = new Set([...ancestors, arr]);
+        const elements = arr.map((item, index) =>
+            stringifyPlusInner(item, `${path}[${index}]`, false, true, nextAncestors, null)
+        );
+        return `[${elements.join(',')}]`;
+    }
+
+    /**
+     * Helper to stringify objects, handling circular references and special values.
+     * @param {Object} obj - The object to stringify
+     * @param {string} path - The current path in the object tree
+     * @param {Set<object>} ancestors - Set of ancestor objects for circular detection
+     * @returns {string}
+     */
+    function stringifyObject(obj, path, ancestors) {
+        const nextAncestors = new Set([...ancestors, obj]);
+        const keys = Object.keys(obj);
+        const pairs = keys.map(key => {
+            // Remove 'template' keys if requested
+            if (removeTemplate && key === 'template') {
+                return `${JSON.stringify(key)}:"Removed for performance reasons"`;
+            }
+            let val = obj[key];
+            // Handle special values for object properties
+            if (val === undefined) {
+                return `${JSON.stringify(key)}:"[ undefined ]"`;
+            }
+            if (val === null) {
+                return `${JSON.stringify(key)}:null`;
+            }
+            if (typeof val === 'function') {
+                const name = val.name && val.name !== 'anonymousFunction' ? val.name : 'anonymous';
+                return `${JSON.stringify(key)}:"[function ${name}]"`;
+            }
+            if (typeof val === 'symbol') {
+                return `${JSON.stringify(key)}:"[Symbol ${val.description || ''}]"`;
+            }
+            if (typeof val === 'bigint') {
+                return `${JSON.stringify(key)}:"${val.toString()}"`;
+            }
+            // Recursively stringify property
+            return `${JSON.stringify(key)}:${stringifyPlusInner(val, `${path}.${key}`, false, false, nextAncestors, key)}`;
+        });
+        return `{${pairs.join(',')}}`;
+    }
+
+    // Start the stringification process
+    return stringifyPlusInner(data);
 } 

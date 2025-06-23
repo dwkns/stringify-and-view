@@ -1,8 +1,18 @@
+// json-viewer.js
+//
+// Interactive, collapsible JSON viewer with syntax highlighting and controls.
+// Provides a filter for Eleventy and a reusable module for rendering JSON data.
+//
+// Author: [Your Name]
+//
+
 import { stringifyPlus } from "./stringify-plus.js";
 /**
  * JSON Viewer Module and Filter
  * Provides a collapsible, interactive JSON viewer with syntax highlighting
  * and support for toggling types and counts display.
+ *
+ * @module json-viewer
  */
 
 const JSONViewerModule = {
@@ -276,10 +286,12 @@ const JSONViewerModule = {
     (function() {
       /**
        * JSON Viewer class that handles rendering and interaction
+       * @class
        */
       class JSONViewer {
         /**
          * Creates a new JSON viewer instance
+         * @param {HTMLElement} container - The container element
          * @param {Object} options - Configuration options
          * @param {boolean} [options.showTypes=true] - Whether to show type labels
          * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded by default
@@ -493,7 +505,7 @@ const JSONViewerModule = {
           element.className = 'json-viewer-value';
           
           // Special case: removed for performance reasons (no quotes, amber style)
-          if (value === 'removed for performance reasons') {
+          if (value === 'Removed for performance reasons') {
             element.textContent = value;
             element.classList.add('json-viewer-removed-template');
             return element;
@@ -993,4 +1005,10 @@ export default async function jsonViewer(json, options = {}) {
   const processedJSON = await stringifyPlus(json, options);
   const html = JSONViewerModule.generate(processedJSON, options);
   return `<script>console.log(${processedJSON})</script>${html}`
-} 
+}
+
+export { JSONViewerModule };
+
+//
+// End of json-viewer.js
+// 

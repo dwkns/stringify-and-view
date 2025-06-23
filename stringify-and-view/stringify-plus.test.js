@@ -1,6 +1,13 @@
 /*
  * Test suite for the stringifyPlus function
- * Tests various data types and edge cases
+ *
+ * Covers:
+ *   - Null, undefined, and primitive values
+ *   - Special types (BigInt, Symbol, Function, Date)
+ *   - Arrays and objects (including nested and circular)
+ *   - Eleventy-specific quirks (needsCheck, template removal)
+ *   - JSON validity and error cases
+ *   - Custom classes and edge cases
  */
 import { describe, it, expect } from 'vitest';
 import { stringifyPlus } from './stringify-plus.js';
@@ -13,119 +20,113 @@ describe('stringifyPlus', () => {
   let parsed;
   let json;
 
+  // --- Null & Undefined ---
   describe('null & undefined', () => {
-    it('handles null ', async () => {
-
-      // We use this format to ensure that caling stringifyPlus(input) 
-      // doesn't change `input` in an unexpected way. 
-      input = null
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+    it('handles null', async () => {
+      // Should match JSON.stringify for null
+      input = null;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
-    })
+    });
 
-    it('handles undefined ', async () => {
-      input = undefined
+    it('handles undefined', async () => {
+      // Top-level undefined is stringified as a special marker
+      input = undefined;
       await expect(stringifyPlus(input)).resolves.toBe('"[ undefined ]"');
 
+      // In objects, undefined is stringified as a special marker
       input = {
         nullValue: null,
         undefinedValue: undefined
       };
       await expect(stringifyPlus(input)).resolves.toBe('{"nullValue":null,"undefinedValue":"[ undefined ]"}');
     });
-  })
+  });
 
-  // Test primitive values
+  // --- Primitive values ---
   describe('primitive values', () => {
     it('handles numbers', async () => {
-      input = 42
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      // Handles integers, floats, Infinity, NaN
+      input = 42;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = -123.45
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = -123.45;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = Infinity
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = Infinity;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = NaN
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = NaN;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
-
-
-
     });
 
     it('handles BigInt values by converting to string', async () => {
-      input = {
-        big: BigInt(9007199254740991)
-      };
+      input = { big: BigInt(9007199254740991) };
       output = await stringifyPlus(input);
       parsed = JSON.parse(output);
-      expect(parsed).toEqual({
-        big: '9007199254740991'
-      });
+      expect(parsed).toEqual({ big: '9007199254740991' });
     });
 
     it('handles strings', async () => {
-      input = 'hello'
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = 'hello';
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = ''
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = '';
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = ' '
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = ' ';
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = 'special chars: !@#$%^&*()'
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = 'special chars: !@#$%^&*()';
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
 
     it('handles booleans', async () => {
-      input = true
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = true;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
 
-      input = false
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      input = false;
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
   });
 
-  // Test Date objects
+  // --- Date objects ---
   describe('Date objects', () => {
     it('handles dates', async () => {
       input = new Date('2024-01-01T12:00:00.000Z');
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
-
   });
 
-  // Test arrays
+  // --- Arrays ---
   describe('arrays', () => {
     it('handles simple arrays', async () => {
       input = [1, 'two', { a: "a" }, 1.5, "a string", null];
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
 
@@ -136,63 +137,51 @@ describe('stringifyPlus', () => {
 
     it('handles nested arrays', async () => {
       input = [1, [2, 3], [4, [5, 6]]];
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
   });
 
-  // 
-  // Test objects
+  // --- Standard objects ---
   describe('standard objects', () => {
     it('handles simple objects', async () => {
       input = { a: 1, b: 'two', c: true };
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
 
-    it('handles double escaped objects ', async () => {
-      input = { "benchmarks": { "\"getBundle\" Universal Shortcode": {} } }
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+    it('handles double escaped objects', async () => {
+      input = { "benchmarks": { "\"getBundle\" Universal Shortcode": {} } };
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
 
     it('handles nested objects', async () => {
       input = { a: 1, b: { c: 2, d: { e: 3 } }, f: [1, 2, 3] };
-      json = JSON.stringify(input)
-      output = await stringifyPlus(input)
+      json = JSON.stringify(input);
+      output = await stringifyPlus(input);
       expect(output).toBe(json);
     });
 
-    // it('handles circular references', async () => {
-    //   input = { a: 1 };
-    //   input.self = input;
-    //   await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":"[Circular Ref: root]"}');
-    // });
-
-    it('handles circular references ', async () => {
+    // Circular reference: should output a nested object with a circular marker
+    it('handles circular references', async () => {
       input = { a: 1 };
       input.self = input;
       await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":{"a":1,"self":"[Circular Ref: root]"}}');
     });
 
-
-
-    // it('handles deeply nested circular references', async () => {
-    //   input = { a: 1 , b: { bNested: "bNested"} };
-    //   input.c =  { cNested:"cNested", referenced: input.b } 
-    //   await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":"[Circular Ref: root.b]"}}');
-    // });
+    // Deeply nested circular reference
     it('handles deeply nested circular references', async () => {
       input = { a: 1 , b: { bNested: "bNested"} };
-      input.c =  { cNested:"cNested", referenced: input.b } 
+      input.c =  { cNested:"cNested", referenced: input.b };
       await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":{"bNested":"bNested"}}}');
     });
   });
 
-
+  // --- Eleventy-specific quirks ---
   describe('Eleventy Specific', () => {
     // Some Eleventy objects are not serializable and break JSON.stringify
     // needsCheck=false is an escape hatch which allows us to process these
@@ -206,7 +195,7 @@ describe('stringifyPlus', () => {
       await expect(stringifyPlus(input)).resolves.toBe('{"_value":42,"value":42,"needsCheck":false}');
     });
 
-    it('handles unserializable Eleventy objects', async () => {
+    it('handles unserializable Eleventy objects (nested)', async () => {
       input = { a: { needsCheck: true, b: { needsCheck: true, c: 42 } }, needsCheck: true };
       await expect(stringifyPlus(input)).resolves.toBe('{"a":{"needsCheck":false,"b":{"needsCheck":false,"c":42}},"needsCheck":false}');
     });
@@ -219,10 +208,9 @@ describe('stringifyPlus', () => {
       };
       await expect(stringifyPlus(input,{ removeTemplate: true })).resolves.toBe('{"a":1,"template":"Removed for performance reasons","b":{"template":"Removed for performance reasons"}}');
     });
-
   });
 
-  // Test complex nested structures
+  // --- Complex nested structures ---
   describe('complex nested structures', () => {
     it('handles complex nested data', async () => {
       input = {
@@ -236,11 +224,9 @@ describe('stringifyPlus', () => {
       };
       await expect(stringifyPlus(input)).resolves.toBe('{"date":"2024-01-01T00:00:00.000Z","numbers":[1,2,3],"nested":{"text":"hello","bool":true,"arr":[null,"[ undefined ]",{"x":1}]}}');
     });
-
-
   });
 
-  // Test JSON validity
+  // --- JSON validity ---
   describe('JSON validity', () => {
     it('outputs valid JSON that can be parsed', async () => {
       const testData = {
@@ -261,11 +247,8 @@ describe('stringifyPlus', () => {
       });
     });
 
-
-
-
     it('throws error for invalid JSON output', async () => {
-      // Create an object with a function that will cause invalid JSON
+      // Create an object with a getter that throws
       input = {
         get invalid() {
           throw new Error('This will cause invalid JSON');
@@ -275,6 +258,7 @@ describe('stringifyPlus', () => {
     });
   });
 
+  // --- Special cases ---
   describe('Special cases', () => {
     it('handles Symbol values by converting to string', async () => {
       input = {
