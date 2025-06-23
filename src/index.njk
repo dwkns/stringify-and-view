@@ -14,12 +14,18 @@ title: "JSON Viewer"
     {% set string = "value" %}
     {% set number = 123 %}
     {% set array = ["string 1", "string 2", 3, 4 , {a:"a"} ] %}
+    {% set longArray = {
+
+        a: ["string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"} ],
+        b: "hello"
+    }%}
     {% set object = {a: "a", b:"b"} %}
  
 
     {{  string | jsonViewer({ title: "string"}) | safe }}
     {{  number | jsonViewer({ title: "number"}) | safe }}
     {{  array | jsonViewer({ title: "array"}) | safe }}
+    {{  longArray | jsonViewer({ title: "array"}) | safe }}
     {{  object | jsonViewer({ title: "object"}) | safe }}
 
 
