@@ -3,46 +3,87 @@ title: "JSON Viewer"
 ---
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <style>
+        body {
+            margin: auto;
+            padding: 20px;
+        }
+
+        hr {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        pre {
+            max-width: 100vw;
+        }
+
+        pre code {
+            max-width: 100vw;
+        }
+    </style>
 </head>
+
 <body>
     <h1>{{title}}</h1>
+    <p> Using `dump` — Input: <code>{% raw %} {{ { a: "a", b: undefined } | dump }}{% endraw %}</code></p>
+    <p> Output: <code>{{ { a: "a", b: undefined } | dump }}</code></p>
+    <hr>
+    <p> Using `jsonViewer` — Input: <code>{% raw %} {{ { a: "a", b: undefined } | jsonViewer | safe }}{% endraw %}</code></p>
+    <p> Output: {{ { a: "a", b: undefined } | jsonViewer | safe }}</p>
+    <hr>
+    <p> Using `jsonViewer` — Input: <code>{% raw %}  {{  "value" | jsonViewer({ title: "string"}) | safe }} {% endraw %}</code></p>
+    <p> Output:   {{ "value" | jsonViewer({ title: "string"}) | safe }}</p>
+    <hr>
+    <p> Using `jsonViewer` — Input: <code>{% raw %}   {{  123 | jsonViewer({ title: "number"}) | safe }} {% endraw %}</code></p>
+    <p> Output:  {{ 123 | jsonViewer({ title: "number"}) | safe }}</p>
+    <hr>
+    <p> Using `jsonViewer` — Input: <code>{% raw %}  {{   ["string 1", "string 2", 3, 4 , {a:"a"} ] | jsonViewer({ title: "array"}) | safe }} {% endraw %}</code></p>
+    <p> Output:  {{ ["string 1", "string 2", 3, 4 , {a:"a"} ] | jsonViewer({ title: "array"}) | safe }}</p>
+    <hr>
 
-    {{ { a: "a", b: undefined } | dump }}
-    {{ { a: "a", b: undefined } | jsonViewer | safe }}
 
-    {% set string = "value" %}
-    {% set number = 123 %}
-    {% set array = ["string 1", "string 2", 3, 4 , {a:"a"} ] %}
+    <p> Using `jsonViewer` — Input: <code><pre>{% raw %}
+{% set longArray = {a: ["string 1", "string 2", 3, 4 , {template:"a"},"string 1", "string 2", 3, 4, {a:"a"},"string 1", "string 2", 3, 4, {template:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {template:"a"} ], b: "hello"} %}
+        
+{{  longArray | jsonViewer({ title: "array",  removeTemplate: true }) | safe }}
+{% endraw %}</pre></code></p>
+
     {% set longArray = {
-
-        a: ["string 1", "string 2", 3, 4 , {template:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {template:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {template:"a"} ],
-        b: "hello"
+    a: ["string 1", "string 2", 3, 4 , {template:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {template:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {template:"a"} ],
+    b: "hello"
     }%}
-    {% set object = {template: "a", b:"b"} %}
- 
+    <p> Output: {{  longArray | jsonViewer({ title: "array",  removeTemplate: true }) | safe }}</p>
+    <hr>
+    <p> Using `jsonViewer` — Input: <code><pre>{% raw %}
+{{ collections.all[0] | jsonViewer({
+    title: "collections.all[0]",
+    showTypes: false,
+    defaultExpanded: false,
+    pathsOnHover: false,
+    showControls: true,
+    removeTemplate: true 
+}) | safe }}
+{% endraw %}</pre></code></p>
 
-    {{  string | jsonViewer({ title: "string"}) | safe }}
-    {{  number | jsonViewer({ title: "number"}) | safe }}
-    {{  array | jsonViewer({ title: "array"}) | safe }}
-    {{  longArray | jsonViewer({ title: "array",  removeTemplate: true }) | safe }}
-    {{  object | jsonViewer({ title: "object"}) | safe }}
-
-
-    {{ collections.all[0]| jsonViewer({
-        title: "collections.all",
+<p>Output: {{ collections.all[0] | jsonViewer({
+        title: "collections.all[0]",
         showTypes: false,
         defaultExpanded: false,
         pathsOnHover: false,
         showControls: true,
         removeTemplate: true 
-    }) | safe }}
+    }) | safe }}</p>
+    <hr>
+<p>Using consolePlus — input: <code><pre>{% raw %}{% console collections.all[0] %}{% endraw %}</pre></code></p>
+<p> Output: {% console collections.all[0] %}</p>
 
-    {% console collections.all[0] %}
-  
-   
 </body>
-</html> 
+
+</html>
