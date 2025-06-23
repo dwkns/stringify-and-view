@@ -29,8 +29,8 @@ export async function stringifyPlus(data) {
         // Handle circular references
         if (typeof value === 'object') {
             if (seen.has(value)) {
-                // Output the current path where the reference is being made
-                return `"[Circular Ref: ${path}]"`;
+                // Output the path where the reference originated (first seen)
+                return `"[Circular Ref: ${seen.get(value)}]"`;
             }
             seen.set(value, path);
 

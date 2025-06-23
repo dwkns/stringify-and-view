@@ -169,13 +169,13 @@ describe('stringifyPlus', () => {
     it('handles circular references', async () => {
       input = { a: 1 };
       input.self = input;
-      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":"[Circular Ref: root.self]"}');
+      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":"[Circular Ref: root]"}');
     });
 
     it('handles deeply nested circular references', async () => {
-      input = { a: 1 };
-      input.nest = { b: 2, parent: input };
-      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"nest":{"b":2,"parent":"[Circular Ref: root.nest.parent]"}}');
+      input = { a: 1 , b: { bNested: "bNested"} };
+      input.c =  { cNested:"cNested", referenced: input.b } 
+      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":"[Circular Ref: root.b]"}}');
     });
   });
 
@@ -221,7 +221,7 @@ describe('stringifyPlus', () => {
       parsed = JSON.parse(output);
       expect(parsed).toEqual({
         a: 1,
-        self: '[Circular Ref: root.self]'
+        self: '[Circular Ref: root]'
       });
     });
 
