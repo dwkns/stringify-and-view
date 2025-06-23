@@ -200,13 +200,20 @@ describe('stringifyPlus', () => {
       await expect(stringifyPlus(input)).resolves.toBe('{"a":{"needsCheck":false,"b":{"needsCheck":false,"c":42}},"needsCheck":false}');
     });
 
-    it('allows removing template as a key', async () => {
+    it('allows replacing keys with removeKeysArray (string and object entries)', async () => {
       input =  {
         a: 1,
         template: { big: "data", nested: { foo: "bar" } },
-        b: { template: { x: 1 } }
+        b: { template: { x: 1 } },
+        secret: '12345',
+        hidden: 'should hide',
+        visible: 'ok'
       };
-      await expect(stringifyPlus(input,{ removeTemplate: true })).resolves.toBe('{"a":1,"template":"Removed for performance reasons","b":{"template":"Removed for performance reasons"}}');
+      await expect(stringifyPlus(input, { removeKeysArray: [
+        'template',
+        { keyName: 'secret', replaceString: '***hidden***' },
+        'hidden'
+      ] })).resolves.toBe('{"a":1,"template":"Replaced as key was in supplied removeKeysArray","b":{"template":"Replaced as key was in supplied removeKeysArray"},"secret":"***hidden***","hidden":"Replaced as key was in supplied removeKeysArray","visible":"ok"}');
     });
   });
 

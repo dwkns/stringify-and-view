@@ -12,10 +12,23 @@ export async function stringifyPlus(data, options = {}) {
     // Define default options
     const defaults = {
         maxCircularDepth: 1,
-        removeTemplate: false
+        removeKeysArray: [] // Array of { keyName, replaceString }
     };
     // Merge defaults with incoming options (options take precedence)
     options = Object.assign({}, defaults, options);
+
+    // Helper to find a replacement string for a key, if any
+    function getReplacementForKey(key) {
+        if (!Array.isArray(options.removeKeysArray)) return null;
+        for (const entry of options.removeKeysArray) {
+            if (typeof entry === 'string' && entry === key) {
+                return 'Replaced as key was in supplied removeKeysArray';
+            } else if (typeof entry === 'object' && entry.keyName === key) {
+                return entry.replaceString;
+            }
+        }
+        return null;
+    }
 
     // Tracks the first path where each object is seen (for circular reference reporting)
     const seen = new WeakMap();
@@ -33,13 +46,20 @@ export async function stringifyPlus(data, options = {}) {
      * @returns {string} - The stringified value
      */
     function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false, ancestors = new Set(), parentKey = null) {
-        // Remove 'template' keys if requested
-        if (options.removeTemplate && parentKey === 'template') {
-            return '"Removed for performance reasons"';
+        // Remove/replace keys if requested
+        if (parentKey) {
+            const replacement = getReplacementForKey(parentKey);
+            if (replacement !== null) {
+                return JSON.stringify(replacement);
+            }
         }
-        // If the root object itself is a 'template' object
-        if (options.removeTemplate && parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1 && Object.keys(value)[0] === 'template') {
-            return '{"template":"Removed for performance reasons"}';
+        // If the root object itself is a single key that matches a replacement
+        if (parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1) {
+            const onlyKey = Object.keys(value)[0];
+            const replacement = getReplacementForKey(onlyKey);
+            if (replacement !== null) {
+                return `{${JSON.stringify(onlyKey)}:${JSON.stringify(replacement)}}`;
+            }
         }
 
         // Handle special primitive values
@@ -127,9 +147,10 @@ export async function stringifyPlus(data, options = {}) {
         const nextAncestors = new Set([...ancestors, obj]);
         const keys = Object.keys(obj);
         const pairs = keys.map(key => {
-            // Remove 'template' keys if requested
-            if (options.removeTemplate && key === 'template') {
-                return `${JSON.stringify(key)}:"Removed for performance reasons"`;
+            // Remove/replace keys if requested
+            const replacement = getReplacementForKey(key);
+            if (replacement !== null) {
+                return `${JSON.stringify(key)}:${JSON.stringify(replacement)}`;
             }
             let val = obj[key];
             // Handle special values for object properties

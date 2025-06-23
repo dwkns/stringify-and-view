@@ -92,7 +92,7 @@ describe('json-viewer', () => {
   });
 
   it('renders functions and symbols (data-json attribute)', async () => {
-    const html = await getViewerHTML({ fn: function testFunc() {}, sym: Symbol('s') });
+    const html = await getViewerHTML({ fn: function testFunc() { }, sym: Symbol('s') });
     const data = extractDataJson(html);
     expect(data.fn).toBe('[function testFunc]');
     expect(data.sym).toBe('[Symbol s]');
@@ -116,7 +116,7 @@ describe('json-viewer', () => {
 
   // --- UI controls ---
   it('includes controls for show types and paths', async () => {
-    const html = await getViewerHTML({ a: 1 }, { showControls:true, showTypes: true, pathsOnHover: true });
+    const html = await getViewerHTML({ a: 1 }, { showControls: true, showTypes: true, pathsOnHover: true });
     const dom = await renderInJsdom(html);
     const container = dom.window.document.querySelector('.json-viewer-container');
     expect(container.textContent).toContain('Show Types');
@@ -131,11 +131,42 @@ describe('json-viewer', () => {
     expect(extractDataJson(htmlArr)).toEqual([]);
   });
 
-  it('renders removed template marker in the DOM', async () => {
-    const html = await getViewerHTML({ template: { foo: 'bar' } }, { removeTemplate: true });
+  it('renders replaced key marker in the DOM', async () => {
+    const html = await getViewerHTML({
+      foo: {
+        bar: 'baz'
+      },
+      template: {
+        foo: 'bar'
+      }
+    }, {
+      removeKeysArray: [{
+        keyName: 'template',
+        replaceString: 'Removed for performance reasons'
+      }]
+    });
     const dom = await renderInJsdom(html);
     const container = dom.window.document.querySelector('.json-viewer-container');
     expect(container.textContent).toContain('Removed for performance reasons');
+  });
+
+  it('renders replaced custom key marker in the DOM', async () => {
+    const html = await getViewerHTML({ secret: '12345', visible: 'ok' }, { removeKeysArray: [{ keyName: 'secret', replaceString: '***hidden***' }] });
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    expect(container.textContent).toContain('***hidden***');
+    expect(container.textContent).toContain('visible:');
+    expect(container.textContent).toContain('ok');
+  });
+
+  it('renders replaced key marker for string and object entries in removeKeysArray', async () => {
+    const html = await getViewerHTML({ secret: '12345', hidden: 'should hide', visible: 'ok' }, { removeKeysArray: [ 'hidden', { keyName: 'secret', replaceString: '***hidden***' } ] });
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    expect(container.textContent).toContain('***hidden***');
+    expect(container.textContent).toContain('Replaced as key was in supplied removeKeysArray');
+    expect(container.textContent).toContain('visible:');
+    expect(container.textContent).toContain('ok');
   });
 
   // --- API usage ---

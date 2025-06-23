@@ -68,7 +68,10 @@ title: "JSON Viewer"
     defaultExpanded: false,
     pathsOnHover: false,
     showControls: true,
-    removeTemplate: true 
+    removeKeysArray: [{
+        keyName: 'template',
+        replaceString: 'Removed for performance reasons'
+      }]
 }) | safe }}
 {% endraw %}</pre></code></p>
 
@@ -78,7 +81,11 @@ title: "JSON Viewer"
         defaultExpanded: false,
         pathsOnHover: false,
         showControls: true,
-        removeTemplate: true 
+        removeKeysArray: [{
+            keyName: 'template',
+            replaceString: 'Removed for performance reasons'
+          }]
+
     }) | safe }}</p>
     <hr>
 <p>Using consolePlus — input: <code><pre>{% raw %}{% console collections.all[0] %}{% endraw %}</pre></code></p>

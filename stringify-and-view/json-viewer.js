@@ -275,6 +275,11 @@ const JSONViewerModule = {
       color: #ffb300;
       font-style: italic;
     }
+
+    .json-viewer-replaced-value {
+      color: #ffb300;
+      font-style: italic;
+    }
   `,
 
   /**
@@ -500,10 +505,14 @@ const JSONViewerModule = {
           const element = document.createElement('span');
           element.className = 'json-viewer-value';
           
-          // Special case: removed for performance reasons (no quotes, amber style)
-          if (value === 'Removed for performance reasons') {
+          // Special case: replaced value (no quotes, amber style)
+          // If options.removeKeysArray is present, check if value matches any replaceString or is the default replacement string
+          if (
+            (this.options && Array.isArray(this.options.removeKeysArray) && this.options.removeKeysArray.find(entry => value === entry.replaceString)) ||
+            value === 'Replaced as key was in supplied removeKeysArray'
+          ) {
             element.textContent = value;
-            element.classList.add('json-viewer-removed-template');
+            element.classList.add('json-viewer-replaced-value');
             return element;
           }
 

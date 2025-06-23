@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "rimraf dist build && eleventy --serve --quiet",
     "build": "eleventy ",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "eleventy-plugin-console-plus": "^0.1.1"
