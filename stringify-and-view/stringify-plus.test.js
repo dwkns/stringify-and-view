@@ -217,7 +217,7 @@ describe('stringifyPlus', () => {
         template: { big: "data", nested: { foo: "bar" } },
         b: { template: { x: 1 } }
       };
-      await expect(stringifyPlus(input,{ removeTemplate: true })).resolves.toBe('{"a":1,"template":"removed for performance reasons","b":{"template":"removed for performance reasons"}}');
+      await expect(stringifyPlus(input,{ removeTemplate: true })).resolves.toBe('{"a":1,"template":"Removed for performance reasons","b":{"template":"Removed for performance reasons"}}');
     });
 
   });

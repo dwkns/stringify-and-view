@@ -11,18 +11,17 @@ export async function stringifyPlus(data, options = {}) {
     // Use a WeakMap to track how many times each object has been stringified in a circular context
     const circularDepths = new WeakMap();
     const maxCircularDepth = options.maxCircularDepth ?? 1;
-    console.log("options.removeTemplate: ", options.removeTemplate)
     const removeTemplate = options.removeTemplate ?? false;
     
 
     function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false, ancestors = new Set(), parentKey = null) {
         // If the parent key is 'template' and removeTemplate is true, replace value
         if (removeTemplate && parentKey === 'template') {
-            return '"removed for performance reasons"';
+            return '"Removed for performance reasons"';
         }
         // If the root object itself is a 'template' object
         if (removeTemplate && parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1 && Object.keys(value)[0] === 'template') {
-            return '{"template":"removed for performance reasons"}';
+            return '{"template":"Removed for performance reasons"}';
         }
         // Handle special values
         if (value === undefined) return '"[ undefined ]"';
@@ -60,7 +59,7 @@ export async function stringifyPlus(data, options = {}) {
                     const pairs = keys.map(key => {
                         let val = value[key];
                         if (removeTemplate && key === 'template') {
-                            return `${JSON.stringify(key)}:"removed for performance reasons"`;
+                            return `${JSON.stringify(key)}:"Removed for performance reasons"`;
                         }
                         if (val === undefined) {
                             return `${JSON.stringify(key)}:"[ undefined ]"`;
@@ -103,7 +102,7 @@ export async function stringifyPlus(data, options = {}) {
             const keys = Object.keys(value);
             const pairs = keys.map(key => {
                 if (removeTemplate && key === 'template') {
-                    return `${JSON.stringify(key)}:"removed for performance reasons"`;
+                    return `${JSON.stringify(key)}:"Removed for performance reasons"`;
                 }
                 let val = value[key];
                 if (val === undefined) {

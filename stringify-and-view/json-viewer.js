@@ -259,6 +259,11 @@ const JSONViewerModule = {
       display: inline-flex;
       gap: 4px;
     }
+
+    .json-viewer-removed-template {
+      color: #ffb300;
+      font-style: italic;
+    }
   `,
 
   /**
@@ -487,6 +492,13 @@ const JSONViewerModule = {
           const element = document.createElement('span');
           element.className = 'json-viewer-value';
           
+          // Special case: removed for performance reasons (no quotes, amber style)
+          if (value === 'removed for performance reasons') {
+            element.textContent = value;
+            element.classList.add('json-viewer-removed-template');
+            return element;
+          }
+
           if (value === null) {
             element.textContent = 'null';
             element.classList.add('json-viewer-null');
