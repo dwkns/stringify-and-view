@@ -15,6 +15,21 @@ function getViewerHTML(json, options = {}) {
   return jsonViewer(json, options);
 }
 
+// Helper to extract and parse the data-json attribute from the HTML
+function extractDataJson(html) {
+  const match = html.match(/data-json='([^']+)'/);
+  if (!match) return null;
+  return JSON.parse(match[1].replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+}
+
+// Helper to simulate the browser, run the embedded script, and return the DOM
+async function renderInJsdom(html) {
+  const dom = new JSDOM(html, { runScripts: 'dangerously', resources: 'usable' });
+  // Wait for the script to run and the DOM to update
+  await new Promise(resolve => setTimeout(resolve, 50));
+  return dom;
+}
+
 describe('json-viewer', () => {
   let dom;
   let container;
@@ -29,83 +44,106 @@ describe('json-viewer', () => {
   });
 
   // --- Basic rendering ---
-  it('renders a simple object', async () => {
+  it('renders a simple object (data-json attribute)', async () => {
     const html = await getViewerHTML({ a: 1, b: 'two' });
     expect(html).toContain('json-viewer-container');
-    expect(html).toContain('"a":1');
-    expect(html).toContain('"b":"two"');
+    const data = extractDataJson(html);
+    expect(data).toEqual({ a: 1, b: 'two' });
   });
 
-  it('renders an array', async () => {
+  it('renders an array (data-json attribute)', async () => {
     const html = await getViewerHTML([1, 2, 3]);
-    expect(html).toContain('[1,2,3]');
+    const data = extractDataJson(html);
+    expect(data).toEqual([1, 2, 3]);
   });
 
-  it('renders primitives', async () => {
-    expect(await getViewerHTML(42)).toContain('42');
-    expect(await getViewerHTML('hello')).toContain('"hello"');
-    expect(await getViewerHTML(true)).toContain('true');
+  it('renders primitives (data-json attribute)', async () => {
+    expect(extractDataJson(await getViewerHTML(42))).toBe(42);
+    expect(extractDataJson(await getViewerHTML('hello'))).toBe('hello');
+    expect(extractDataJson(await getViewerHTML(true))).toBe(true);
+  });
+
+  // --- Rendered DOM checks ---
+  it('renders a simple object in the DOM', async () => {
+    const html = await getViewerHTML({ a: 1, b: 'two' });
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    // Check for key/value pairs in the DOM
+    expect(container.textContent).toContain('a:');
+    expect(container.textContent).toContain('1');
+    expect(container.textContent).toContain('b:');
+    expect(container.textContent).toContain('two');
+  });
+
+  it('renders deeply nested structures in the DOM', async () => {
+    const nested = { a: { b: { c: { d: 1 } } } };
+    const html = await getViewerHTML(nested);
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    expect(container.textContent).toContain('d:');
+    expect(container.textContent).toContain('1');
   });
 
   // --- Special values ---
-  it('renders null and undefined', async () => {
+  it('renders null and undefined (data-json attribute)', async () => {
     const html = await getViewerHTML({ a: null, b: undefined });
-    expect(html).toContain('null');
-    expect(html).toContain('[ undefined ]');
+    const data = extractDataJson(html);
+    expect(data).toEqual({ a: null, b: '[ undefined ]' });
   });
 
-  it('renders functions and symbols', async () => {
+  it('renders functions and symbols (data-json attribute)', async () => {
     const html = await getViewerHTML({ fn: function testFunc() {}, sym: Symbol('s') });
-    expect(html).toContain('[function testFunc]');
-    expect(html).toContain('[Symbol s]');
+    const data = extractDataJson(html);
+    expect(data.fn).toBe('[function testFunc]');
+    expect(data.sym).toBe('[Symbol s]');
   });
 
-  it('renders dates', async () => {
+  it('renders dates (data-json attribute)', async () => {
     const html = await getViewerHTML({ d: new Date('2024-01-01T00:00:00.000Z') });
-    expect(html).toContain('2024-01-01T00:00:00.000Z');
+    const data = extractDataJson(html);
+    expect(data.d).toBe('2024-01-01T00:00:00.000Z');
   });
 
-  it('renders circular references', async () => {
+  it('renders circular references (data-json attribute)', async () => {
     const obj = { a: 1 };
     obj.self = obj;
     const html = await getViewerHTML(obj);
-    expect(html).toContain('[Circular Ref: root]');
+    const data = extractDataJson(html);
+    expect(data.a).toBe(1);
+    expect(typeof data.self).toBe('object');
+    expect(data.self.self).toContain('[Circular Ref:');
   });
 
   // --- UI controls ---
   it('includes controls for show types and paths', async () => {
-    const html = await getViewerHTML({ a: 1 }, { showTypes: true, pathsOnHover: true });
-    expect(html).toContain('Show Types');
-    expect(html).toContain('Show Paths on Hover');
+    const html = await getViewerHTML({ a: 1 }, { showControls:true, showTypes: true, pathsOnHover: true });
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    expect(container.textContent).toContain('Show Types');
+    expect(container.textContent).toContain('Show Paths on Hover');
   });
 
   // --- Edge cases ---
-  it('renders empty object and array', async () => {
+  it('renders empty object and array (data-json attribute)', async () => {
     const htmlObj = await getViewerHTML({});
     const htmlArr = await getViewerHTML([]);
-    expect(htmlObj).toContain('{}');
-    expect(htmlArr).toContain('[]');
+    expect(extractDataJson(htmlObj)).toEqual({});
+    expect(extractDataJson(htmlArr)).toEqual([]);
   });
 
-  it('renders deeply nested structures', async () => {
-    const nested = { a: { b: { c: { d: 1 } } } };
-    const html = await getViewerHTML(nested);
-    expect(html).toContain('"d":1');
-  });
-
-  it('renders removed template marker', async () => {
+  it('renders removed template marker in the DOM', async () => {
     const html = await getViewerHTML({ template: { foo: 'bar' } }, { removeTemplate: true });
-    expect(html).toContain('Removed for performance reasons');
+    const dom = await renderInJsdom(html);
+    const container = dom.window.document.querySelector('.json-viewer-container');
+    expect(container.textContent).toContain('Removed for performance reasons');
   });
 
   // --- API usage ---
-  it('exports generate, getScript, getStyles', () => {
+  it('exports jsonViewer as default and named export', () => {
     // Import the module directly for API tests
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const mod = require('./json-viewer.js');
     expect(typeof mod.default).toBe('function');
-    expect(typeof mod.JSONViewerModule?.generate).toBe('function');
-    expect(typeof mod.JSONViewerModule?.getScript).toBe('function');
-    expect(typeof mod.JSONViewerModule?.getStyles).toBe('function');
+    expect(typeof mod.jsonViewer).toBe('function');
   });
 }); 

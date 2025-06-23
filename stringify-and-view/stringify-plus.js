@@ -1,21 +1,26 @@
 /**
  * Enhanced JSON stringifier with support for special values, circular references, and custom options.
+ * Uses a defaults pattern for options: defaults are defined and merged with incoming options, with options taking precedence.
  * Handles functions, symbols, BigInts, Dates, and Eleventy-specific quirks.
  *
  * @module stringify-plus
  * @param {any} data - The data to stringify
  * @param {Object} [options] - Optional configuration options
- * @param {number} [options.maxCircularDepth=1] - How many times to repeat circular references before replacing with a marker
- * @param {boolean} [options.removeTemplate=false] - If true, replaces any 'template' key with a placeholder
  * @returns {Promise<string>} The compact stringified data
  */
 export async function stringifyPlus(data, options = {}) {
+    // Define default options
+    const defaults = {
+        maxCircularDepth: 1,
+        removeTemplate: false
+    };
+    // Merge defaults with incoming options (options take precedence)
+    options = Object.assign({}, defaults, options);
+
     // Tracks the first path where each object is seen (for circular reference reporting)
     const seen = new WeakMap();
     // Tracks how many times each object has been stringified in a circular context
     const circularDepths = new WeakMap();
-    const maxCircularDepth = options.maxCircularDepth ?? 1;
-    const removeTemplate = options.removeTemplate ?? false;
 
     /**
      * Helper to stringify a value, handling all special cases and recursion.
@@ -29,11 +34,11 @@ export async function stringifyPlus(data, options = {}) {
      */
     function stringifyPlusInner(value, path = 'root', parentIsRoot = true, inArray = false, ancestors = new Set(), parentKey = null) {
         // Remove 'template' keys if requested
-        if (removeTemplate && parentKey === 'template') {
+        if (options.removeTemplate && parentKey === 'template') {
             return '"Removed for performance reasons"';
         }
         // If the root object itself is a 'template' object
-        if (removeTemplate && parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1 && Object.keys(value)[0] === 'template') {
+        if (options.removeTemplate && parentIsRoot && typeof value === 'object' && value !== null && Object.keys(value).length === 1 && Object.keys(value)[0] === 'template') {
             return '{"template":"Removed for performance reasons"}';
         }
 
@@ -61,7 +66,7 @@ export async function stringifyPlus(data, options = {}) {
             if (ancestors.has(value)) {
                 // Count how many times we've seen this object in a circular context
                 const count = circularDepths.get(value) || 0;
-                if (count < maxCircularDepth) {
+                if (count < options.maxCircularDepth) {
                     circularDepths.set(value, count + 1);
                     // Recursively output the object/array again
                     return Array.isArray(value)
@@ -123,7 +128,7 @@ export async function stringifyPlus(data, options = {}) {
         const keys = Object.keys(obj);
         const pairs = keys.map(key => {
             // Remove 'template' keys if requested
-            if (removeTemplate && key === 'template') {
+            if (options.removeTemplate && key === 'template') {
                 return `${JSON.stringify(key)}:"Removed for performance reasons"`;
             }
             let val = obj[key];

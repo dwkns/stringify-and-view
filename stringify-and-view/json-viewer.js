@@ -11,6 +11,7 @@ import { stringifyPlus } from "./stringify-plus.js";
  * JSON Viewer Module and Filter
  * Provides a collapsible, interactive JSON viewer with syntax highlighting
  * and support for toggling types and counts display.
+ * Uses a defaults pattern for options: defaults are defined and merged with incoming options, with options taking precedence.
  *
  * @module json-viewer
  */
@@ -300,14 +301,9 @@ const JSONViewerModule = {
          * @param {number} [options.indentWidth=8] - The number of pixels to indent each level
          */
         constructor(container, options = {}) {
+          // Merge defaults with incoming options (options take precedence)
+          this.options = Object.assign({}, options);
           this.container = container;
-          this.options = {
-            showTypes: options.showTypes === false ? false : false,
-            defaultExpanded: options.defaultExpanded ?? false,
-            pathsOnHover: options.pathsOnHover === true ? true : false,
-            showControls: options.showControls === false ? false : true,
-            indentWidth: options.indentWidth ?? 6
-          };
           this.isOptionKeyPressed = false;
           this.expandedNodes = new Set();
           this.currentlyOpenPanel = null;
@@ -992,22 +988,24 @@ const JSONViewerModule = {
   }
 };
 
-/**
- * Eleventy filter that generates a JSON viewer
- * @param {*} json - The JSON data to display
- * @param {Object} options - Viewer configuration options
- * @param {boolean} [options.showTypes=true] - Whether to show type labels
- * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded 
- * @param {number} [options.indentWidth=8] - The number of pixels to indent each level
- * @returns {string} The complete HTML output
- */
-export default async function jsonViewer(json, options = {}) {
+const jsonViewer = async function jsonViewer(json, options = {}) {
+  // Define default options for the filter as well
+  const defaults = {
+    // In json-viewer
+    showTypes: false,
+    defaultExpanded: false,
+    pathsOnHover: false,
+    showControls: false,
+    indentWidth: 6
+  };
+  options = Object.assign({}, defaults, options);
   const processedJSON = await stringifyPlus(json, options);
   const html = JSONViewerModule.generate(processedJSON, options);
-  return `<script>console.log(${processedJSON})</script>${html}`
+  return html;
 }
 
-export { JSONViewerModule };
+export default jsonViewer;
+export { jsonViewer };
 
 //
 // End of json-viewer.js

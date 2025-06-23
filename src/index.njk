@@ -11,6 +11,9 @@ title: "JSON Viewer"
 <body>
     <h1>{{title}}</h1>
 
+    {{ { a: "a", b: undefined } | dump }}
+    {{ { a: "a", b: undefined } | jsonViewer | safe }}
+
     {% set string = "value" %}
     {% set number = 123 %}
     {% set array = ["string 1", "string 2", 3, 4 , {a:"a"} ] %}
@@ -32,7 +35,6 @@ title: "JSON Viewer"
     {{ collections.all[0]| jsonViewer({
         title: "collections.all",
         showTypes: false,
-        showCounts: false,
         defaultExpanded: false,
         pathsOnHover: false,
         showControls: true,
