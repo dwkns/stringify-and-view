@@ -706,7 +706,7 @@ const JSONViewerModule = {
             
             const toggle = this.createToggleButton();
             toggle.addEventListener('click', (e) => {
-              if (this.isOptionKeyPressed) this.toggleAll(node);
+              if (e.altKey) this.toggleAll(node, true);
               else this.toggleNode(node, nodePath);
             });
             node.appendChild(toggle);
@@ -811,26 +811,26 @@ const JSONViewerModule = {
          * Toggles the expansion state of a node and all its children
          * @param {HTMLElement} node - The node to toggle
          */
-        toggleAll(node) {
+        toggleAll(node, includeRoot) {
           const content = node.querySelector('.json-viewer-content');
-          const toggle = node.querySelector('.json-viewer-toggle');
-          const isExpanded = content.style.display === 'block';
-          
-          const toggleRecursive = (element) => {
-            const contents = element.querySelectorAll('.json-viewer-content');
-            const toggles = element.querySelectorAll('.json-viewer-toggle');
-            
-            contents.forEach((content, index) => {
-              const nodePath = this.getNodePath(content.parentElement);
-              content.style.display = isExpanded ? 'none' : 'block';
-              toggles[index].innerHTML = isExpanded ? '▶' : '▼';
-              
-              if (isExpanded) this.expandedNodes.delete(nodePath);
-              else this.expandedNodes.add(nodePath);
-            });
-          };
+          const isExpanded = content && content.style.display === 'block';
+          const targetExpand = !isExpanded;
 
-          toggleRecursive(node);
+          // Include the root node itself, not just descendants
+          const nodes = includeRoot ? [node, ...node.querySelectorAll('.json-viewer-node')] : node.querySelectorAll('.json-viewer-node');
+          nodes.forEach((nodeEl) => {
+            const content = nodeEl.querySelector('.json-viewer-content');
+            const toggle = nodeEl.querySelector('.json-viewer-toggle');
+            const expandedInfo = nodeEl.querySelector('.json-viewer-expanded-info');
+            const collapsedPreview = nodeEl.querySelector('.json-viewer-collapsed-preview');
+            const nodePath = this.getNodePath(nodeEl);
+            if (content) content.style.display = targetExpand ? 'block' : 'none';
+            if (expandedInfo) expandedInfo.style.display = targetExpand ? 'inline' : 'none';
+            if (collapsedPreview) collapsedPreview.style.display = targetExpand ? 'none' : 'inline';
+            if (toggle) toggle.innerHTML = targetExpand ? '▼' : '▶';
+            if (targetExpand) this.expandedNodes.add(nodePath);
+            else this.expandedNodes.delete(nodePath);
+          });
         }
 
         /**
