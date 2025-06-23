@@ -279,6 +279,7 @@ const JSONViewerModule = {
          * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded by default
          * @param {boolean} [options.pathsOnHover=false] - Whether to show key path hover panel
          * @param {boolean} [options.showControls=true] - Whether to show controls
+         * @param {number} [options.indentWidth=8] - The number of pixels to indent each level
          */
         constructor(container, options = {}) {
           this.container = container;
@@ -286,7 +287,8 @@ const JSONViewerModule = {
             showTypes: options.showTypes === false ? false : false,
             defaultExpanded: options.defaultExpanded ?? false,
             pathsOnHover: options.pathsOnHover === true ? true : false,
-            showControls: options.showControls === false ? false : true
+            showControls: options.showControls === false ? false : true,
+            indentWidth: options.indentWidth ?? 6
           };
           this.isOptionKeyPressed = false;
           this.expandedNodes = new Set();
@@ -545,7 +547,7 @@ const JSONViewerModule = {
         createNode(key = undefined, value, depth = 0, path = '') {
           const node = document.createElement('div');
           node.className = 'json-viewer-node';
-          node.style.marginLeft = (depth * 4) + 'px';
+          node.style.marginLeft = (depth * this.options.indentWidth) + 'px';
           if (typeof key !== 'undefined' && key !== null) node.setAttribute('data-key', key);
 
           const header = document.createElement('div');
@@ -607,11 +609,12 @@ const JSONViewerModule = {
               header.appendChild(keyElement);
             }
 
-            const expandedInfo = document.createElement('span');
-            expandedInfo.className = 'json-viewer-expanded-info';
             const typeLabel = this.createTypeLabel(type);
             typeLabel.style.display = isRootLevel || this.options.showTypes ? 'inline' : 'none';
-            expandedInfo.appendChild(typeLabel);
+            header.appendChild(typeLabel);
+
+            const expandedInfo = document.createElement('span');
+            expandedInfo.className = 'json-viewer-expanded-info';
 
             if (count !== null && type === 'array') {
               const countLabel = this.createCountLabel(count);
@@ -962,6 +965,7 @@ const JSONViewerModule = {
  * @param {Object} options - Viewer configuration options
  * @param {boolean} [options.showTypes=true] - Whether to show type labels
  * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded 
+ * @param {number} [options.indentWidth=8] - The number of pixels to indent each level
  * @returns {string} The complete HTML output
  */
 export default async function jsonViewer(json, options = {}) {
