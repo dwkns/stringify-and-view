@@ -90,6 +90,7 @@ const JSONViewerModule = {
       display: flex;
       align-items: center;
       pointer-events: auto;
+      cursor: pointer;
     }
 
     .json-viewer-key-panel-buffer {
@@ -537,6 +538,115 @@ const JSONViewerModule = {
         }
 
         /**
+         * Creates a key element, with hover-to-show-path functionality if enabled.
+         * @param {string} key - The key name.
+         * @param {string} keyPath - The full path to the key.
+         * @returns {HTMLElement} The key element (or a wrapper with hover functionality).
+         * @private
+         */
+        _createKeyElement(key, keyPath) {
+          const keyWrapper = document.createElement('span');
+          keyWrapper.className = 'json-viewer-key-wrapper';
+
+          const keyElement = document.createElement('span');
+          keyElement.className = 'json-viewer-key';
+          keyElement.textContent = key + ': ';
+
+          if (this.options.pathsOnHover) {
+            // Buffer wrapper
+            const buffer = document.createElement('span');
+            buffer.className = 'json-viewer-key-panel-buffer';
+            buffer.style.display = 'none';
+            buffer.appendChild(document.createTextNode(''));
+
+            // Panel
+            const panel = document.createElement('span');
+            panel.className = 'json-viewer-key-panel';
+            panel.style.display = 'none';
+            panel.innerHTML =
+              '<span class="json-viewer-key-path">' + keyPath + '</span>' +
+              '<button class="json-viewer-copy-btn" tabindex="0" aria-label="Copy path to clipboard">' +
+                '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g fill="#000000"><path fill-rule="evenodd" d="M3.25 2.5H4v.25C4 3.44 4.56 4 5.25 4h5.5C11.44 4 12 3.44 12 2.75V2.5h.75a.75.75 0 01.75.75v3a.75.75 0 001.5 0v-3A2.25 2.25 0 0012.75 1h-.775c-.116-.57-.62-1-1.225-1h-5.5c-.605 0-1.11.43-1.225 1H3.25A2.25 2.25 0 001 3.25v10.5A2.25 2.25 0 003.25 16h9.5A2.25 2.25 0 0015 13.75v-1a.75.75 0 00-1.5 0v1a.75.75 0 01-.75.75h-9.5a.75.75 0 01-.75-.75V3.25a.75.75 0 01.75-.75zm2.25-1v1h5v-1h-5z" clip-rule="evenodd"/><path d="M4.75 5.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3zM4 12.25a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zM4.75 8.5a.75.75 0 000 1.5h2a.75.75 0 000-1.5h-2zM16 9.25a.75.75 0 01-.75.75h-4.19l1.22 1.22a.75.75 0 11-1.06 1.06l-2.5-2.5a.752.752 0 010-1.06l2.5-2.5a.75.75 0 111.06 1.06L11.06 8.5h4.19a.75.75 0 01.75.75z"/></g></svg>' +
+                  '<span class="json-viewer-tooltip">Copy path to clipboard</span>' +
+                '</button>' +
+                '<span class="json-viewer-copy-confirm" style="display:none;">Copied!</span>';
+
+            keyWrapper.appendChild(keyElement);
+            keyWrapper.appendChild(buffer);
+            keyWrapper.appendChild(panel);
+            // Copy logic
+            const confirmMsg = panel.querySelector('.json-viewer-copy-confirm');
+            panel.addEventListener('click', (e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(keyPath).then(() => {
+                confirmMsg.style.display = 'inline';
+                setTimeout(() => { confirmMsg.style.display = 'none'; }, 1200);
+              });
+            });
+            // --- Delayed show/hide logic (global timers per viewer) ---
+            keyWrapper.addEventListener('mouseenter', () => {
+              if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
+              if (this.showTimer) { clearTimeout(this.showTimer); this.showTimer = null; }
+              if (this.currentlyOpenPanel && this.currentlyOpenPanel !== panel) {
+                this.currentlyOpenPanel.style.display = 'none';
+                if (this.currentlyOpenBuffer) this.currentlyOpenBuffer.style.display = 'none';
+              }
+              this.showTimer = setTimeout(() => {
+                if (this.currentlyOpenPanel && this.currentlyOpenPanel !== panel) {
+                  this.currentlyOpenPanel.style.display = 'none';
+                  if (this.currentlyOpenBuffer) this.currentlyOpenBuffer.style.display = 'none';
+                }
+                panel.style.display = 'flex';
+                buffer.style.display = 'block';
+                this.currentlyOpenPanel = panel;
+                this.currentlyOpenBuffer = buffer;
+              }, 220);
+            });
+            keyWrapper.addEventListener('mouseleave', () => {
+              if (this.showTimer) { clearTimeout(this.showTimer); this.showTimer = null; }
+              this.hideTimer = setTimeout(() => {
+                panel.style.display = 'none';
+                buffer.style.display = 'none';
+                if (this.currentlyOpenPanel === panel) {
+                  this.currentlyOpenPanel = null;
+                  this.currentlyOpenBuffer = null;
+                }
+              }, 250);
+            });
+            // Buffer hover logic
+            buffer.addEventListener('mouseenter', () => {
+              if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
+            });
+            buffer.addEventListener('mouseleave', () => {
+              this.hideTimer = setTimeout(() => {
+                panel.style.display = 'none';
+                buffer.style.display = 'none';
+                if (this.currentlyOpenPanel === panel) {
+                  this.currentlyOpenPanel = null;
+                  this.currentlyOpenBuffer = null;
+                }
+              }, 250);
+            });
+            panel.addEventListener('mouseenter', () => {
+              if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
+            });
+            panel.addEventListener('mouseleave', () => {
+              this.hideTimer = setTimeout(() => {
+                panel.style.display = 'none';
+                buffer.style.display = 'none';
+                if (this.currentlyOpenPanel === panel) {
+                  this.currentlyOpenPanel = null;
+                  this.currentlyOpenBuffer = null;
+                }
+              }, 250);
+            });
+          } else {
+            keyWrapper.appendChild(keyElement);
+          }
+          return keyWrapper;
+        }
+
+        /**
          * Creates a node element for a value
          * @param {string|null} key - The key of the value
          * @param {*} value - The value to display
@@ -570,10 +680,9 @@ const JSONViewerModule = {
           if (type === 'object' || type === 'array') {
             if (count === 0) {
               if (typeof key !== 'undefined' && key !== null) {
-                const keyElement = document.createElement('span');
-                keyElement.className = 'json-viewer-key';
-                keyElement.textContent = key + ': ';
-                header.appendChild(keyElement);
+                const isArrayKey = typeof key === 'number' || (typeof key === 'string' && /^\d+$/.test(key));
+                const nodePath = buildPath(path, key, isArrayKey);
+                header.appendChild(this._createKeyElement(key, nodePath));
               }
               const typeLabel = this.createTypeLabel(type);
               typeLabel.style.display = this.options.showTypes ? 'inline' : 'none';
@@ -603,10 +712,7 @@ const JSONViewerModule = {
             node.appendChild(toggle);
 
             if (typeof key !== 'undefined' && key !== null) {
-              const keyElement = document.createElement('span');
-              keyElement.className = 'json-viewer-key';
-              keyElement.textContent = key + ': ';
-              header.appendChild(keyElement);
+              header.appendChild(this._createKeyElement(key, nodePath));
             }
 
             const typeLabel = this.createTypeLabel(type);
@@ -660,104 +766,7 @@ const JSONViewerModule = {
             if (typeof key !== 'undefined' && key !== null) {
               const isArrayKey = typeof key === 'number' || (typeof key === 'string' && /^\d+$/.test(key));
               const keyPath = buildPath(path, key, isArrayKey);
-              // --- WRAP key and panel in a wrapper ---
-              const keyWrapper = document.createElement('span');
-              keyWrapper.className = 'json-viewer-key-wrapper';
-              const keyElement = document.createElement('span');
-              keyElement.className = 'json-viewer-key';
-              keyElement.textContent = key + ': ';
-              if (this.options.pathsOnHover) {
-                // Buffer wrapper
-                const buffer = document.createElement('span');
-                buffer.className = 'json-viewer-key-panel-buffer';
-                buffer.style.display = 'none';
-                buffer.appendChild(document.createTextNode(''));
-                // Panel
-                const panel = document.createElement('span');
-                panel.className = 'json-viewer-key-panel';
-                panel.style.display = 'none';
-                panel.innerHTML =
-                  '<span class="json-viewer-key-path">' + keyPath + '</span>' +
-                  '<button class="json-viewer-copy-btn" tabindex="0" aria-label="Copy path to clipboard">' +
-                    '<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none"><g fill="#000000"><path fill-rule="evenodd" d="M3.25 2.5H4v.25C4 3.44 4.56 4 5.25 4h5.5C11.44 4 12 3.44 12 2.75V2.5h.75a.75.75 0 01.75.75v3a.75.75 0 001.5 0v-3A2.25 2.25 0 0012.75 1h-.775c-.116-.57-.62-1-1.225-1h-5.5c-.605 0-1.11.43-1.225 1H3.25A2.25 2.25 0 001 3.25v10.5A2.25 2.25 0 003.25 16h9.5A2.25 2.25 0 0015 13.75v-1a.75.75 0 00-1.5 0v1a.75.75 0 01-.75.75h-9.5a.75.75 0 01-.75-.75V3.25a.75.75 0 01.75-.75zm2.25-1v1h5v-1h-5z" clip-rule="evenodd"/><path d="M4.75 5.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3zM4 12.25a.75.75 0 01.75-.75h3a.75.75 0 010 1.5h-3a.75.75 0 01-.75-.75zM4.75 8.5a.75.75 0 000 1.5h2a.75.75 0 000-1.5h-2zM16 9.25a.75.75 0 01-.75.75h-4.19l1.22 1.22a.75.75 0 11-1.06 1.06l-2.5-2.5a.752.752 0 010-1.06l2.5-2.5a.75.75 0 111.06 1.06L11.06 8.5h4.19a.75.75 0 01.75.75z"/></g></svg>' +
-                    '<span class="json-viewer-tooltip">Copy path to clipboard</span>' +
-                  '</button>' +
-                  '<span class="json-viewer-copy-confirm" style="display:none;">Copied!</span>';
-
-                keyWrapper.appendChild(keyElement);
-                keyWrapper.appendChild(buffer);
-                keyWrapper.appendChild(panel);
-                // Copy logic
-                const copyBtn = panel.querySelector('.json-viewer-copy-btn');
-                const confirmMsg = panel.querySelector('.json-viewer-copy-confirm');
-                copyBtn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(keyPath).then(() => {
-                    confirmMsg.style.display = 'inline';
-                    setTimeout(() => { confirmMsg.style.display = 'none'; }, 1200);
-                  });
-                });
-                // --- Delayed show/hide logic (global timers per viewer) ---
-                keyWrapper.addEventListener('mouseenter', () => {
-                  if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
-                  if (this.showTimer) { clearTimeout(this.showTimer); this.showTimer = null; }
-                  if (this.currentlyOpenPanel && this.currentlyOpenPanel !== panel) {
-                    this.currentlyOpenPanel.style.display = 'none';
-                    if (this.currentlyOpenBuffer) this.currentlyOpenBuffer.style.display = 'none';
-                  }
-                  this.showTimer = setTimeout(() => {
-                    if (this.currentlyOpenPanel && this.currentlyOpenPanel !== panel) {
-                      this.currentlyOpenPanel.style.display = 'none';
-                      if (this.currentlyOpenBuffer) this.currentlyOpenBuffer.style.display = 'none';
-                    }
-                    panel.style.display = 'flex';
-                    buffer.style.display = 'block';
-                    this.currentlyOpenPanel = panel;
-                    this.currentlyOpenBuffer = buffer;
-                  }, 220);
-                });
-                keyWrapper.addEventListener('mouseleave', () => {
-                  if (this.showTimer) { clearTimeout(this.showTimer); this.showTimer = null; }
-                  this.hideTimer = setTimeout(() => {
-                    panel.style.display = 'none';
-                    buffer.style.display = 'none';
-                    if (this.currentlyOpenPanel === panel) {
-                      this.currentlyOpenPanel = null;
-                      this.currentlyOpenBuffer = null;
-                    }
-                  }, 250);
-                });
-                // Buffer hover logic
-                buffer.addEventListener('mouseenter', () => {
-                  if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
-                });
-                buffer.addEventListener('mouseleave', () => {
-                  this.hideTimer = setTimeout(() => {
-                    panel.style.display = 'none';
-                    buffer.style.display = 'none';
-                    if (this.currentlyOpenPanel === panel) {
-                      this.currentlyOpenPanel = null;
-                      this.currentlyOpenBuffer = null;
-                    }
-                  }, 250);
-                });
-                panel.addEventListener('mouseenter', () => {
-                  if (this.hideTimer) { clearTimeout(this.hideTimer); this.hideTimer = null; }
-                });
-                panel.addEventListener('mouseleave', () => {
-                  this.hideTimer = setTimeout(() => {
-                    panel.style.display = 'none';
-                    buffer.style.display = 'none';
-                    if (this.currentlyOpenPanel === panel) {
-                      this.currentlyOpenPanel = null;
-                      this.currentlyOpenBuffer = null;
-                    }
-                  }, 250);
-                });
-              } else {
-                keyWrapper.appendChild(keyElement);
-              }
-              header.appendChild(keyWrapper);
+              header.appendChild(this._createKeyElement(key, keyPath));
             }
 
             if (type !== 'undefined') {
