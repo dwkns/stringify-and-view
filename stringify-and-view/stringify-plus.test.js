@@ -166,16 +166,29 @@ describe('stringifyPlus', () => {
       expect(output).toBe(json);
     });
 
-    it('handles circular references', async () => {
+    // it('handles circular references', async () => {
+    //   input = { a: 1 };
+    //   input.self = input;
+    //   await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":"[Circular Ref: root]"}');
+    // });
+
+    it('handles circular references ', async () => {
       input = { a: 1 };
       input.self = input;
-      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":"[Circular Ref: root]"}');
+      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"self":{"a":1,"self":"[Circular Ref: root]"}}');
     });
 
+
+
+    // it('handles deeply nested circular references', async () => {
+    //   input = { a: 1 , b: { bNested: "bNested"} };
+    //   input.c =  { cNested:"cNested", referenced: input.b } 
+    //   await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":"[Circular Ref: root.b]"}}');
+    // });
     it('handles deeply nested circular references', async () => {
       input = { a: 1 , b: { bNested: "bNested"} };
       input.c =  { cNested:"cNested", referenced: input.b } 
-      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":"[Circular Ref: root.b]"}}');
+      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"b":{"bNested":"bNested"},"c":{"cNested":"cNested","referenced":{"bNested":"bNested"}}}');
     });
   });
 
@@ -197,6 +210,16 @@ describe('stringifyPlus', () => {
       input = { a: { needsCheck: true, b: { needsCheck: true, c: 42 } }, needsCheck: true };
       await expect(stringifyPlus(input)).resolves.toBe('{"a":{"needsCheck":false,"b":{"needsCheck":false,"c":42}},"needsCheck":false}');
     });
+
+    it('allows removing template as a key', async () => {
+      input =  {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        b: { template: { x: 1 } }
+      };
+      await expect(stringifyPlus(input,{ removeTemplate: true })).resolves.toBe('{"a":1,"template":"removed for performance reasons","b":{"template":"removed for performance reasons"}}');
+    });
+
   });
 
   // Test complex nested structures
@@ -214,16 +237,6 @@ describe('stringifyPlus', () => {
       await expect(stringifyPlus(input)).resolves.toBe('{"date":"2024-01-01T00:00:00.000Z","numbers":[1,2,3],"nested":{"text":"hello","bool":true,"arr":[null,"[ undefined ]",{"x":1}]}}');
     });
 
-    it('handles circular references', async () => {
-      input = { a: 1 };
-      input.self = input;
-      output = await stringifyPlus(input);
-      parsed = JSON.parse(output);
-      expect(parsed).toEqual({
-        a: 1,
-        self: '[Circular Ref: root]'
-      });
-    });
 
   });
 

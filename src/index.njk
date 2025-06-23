@@ -19,7 +19,7 @@ title: "JSON Viewer"
         a: ["string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"},"string 1", "string 2", 3, 4 , {a:"a"} ],
         b: "hello"
     }%}
-    {% set object = {a: "a", b:"b"} %}
+    {% set object = {template: "a", b:"b"} %}
  
 
     {{  string | jsonViewer({ title: "string"}) | safe }}
@@ -35,7 +35,8 @@ title: "JSON Viewer"
         showCounts: false,
         defaultExpanded: false,
         pathsOnHover: false,
-        showControls: true 
+        showControls: true,
+        removeTemplate: true 
     }) | safe }}
 
     {% console collections.all[0] %}

@@ -1,0 +1,12 @@
+{
+  "a": 1,
+  "b": {
+    "bNested": "bNested"
+  },
+  "c": {
+    "cNested": "cNested",
+    "referenced": {
+      "bNested": "bNested"
+    }
+  }
+}

@@ -978,7 +978,7 @@ const JSONViewerModule = {
  * @returns {string} The complete HTML output
  */
 export default async function jsonViewer(json, options = {}) {
-  const processedJSON = await stringifyPlus(json);
+  const processedJSON = await stringifyPlus(json, options);
   const html = JSONViewerModule.generate(processedJSON, options);
   return `<script>console.log(${processedJSON})</script>${html}`
 } 
