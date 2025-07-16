@@ -506,10 +506,10 @@ const JSONViewerModule = {
           element.className = 'json-viewer-value';
           
           // Special case: replaced value (no quotes, amber style)
-          // If options.removeKeysArray is present, check if value matches any replaceString or is the default replacement string
+          // If options.removeKeys is present, check if value matches any replaceString or is the default replacement string
           if (
-            (this.options && Array.isArray(this.options.removeKeysArray) && this.options.removeKeysArray.find(entry => value === entry.replaceString)) ||
-            value === 'Replaced as key was in supplied removeKeysArray'
+            (this.options && Array.isArray(this.options.removeKeys) && this.options.removeKeys.find(entry => value === entry.replaceString)) ||
+            value === 'Replaced as key was in supplied removeKeys'
           ) {
             element.textContent = value;
             element.classList.add('json-viewer-replaced-value');

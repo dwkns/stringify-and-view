@@ -140,7 +140,7 @@ describe('json-viewer', () => {
         foo: 'bar'
       }
     }, {
-      removeKeysArray: [{
+      removeKeys: [{
         keyName: 'template',
         replaceString: 'Removed for performance reasons'
       }]
@@ -151,7 +151,7 @@ describe('json-viewer', () => {
   });
 
   it('renders replaced custom key marker in the DOM', async () => {
-    const html = await getViewerHTML({ secret: '12345', visible: 'ok' }, { removeKeysArray: [{ keyName: 'secret', replaceString: '***hidden***' }] });
+    const html = await getViewerHTML({ secret: '12345', visible: 'ok' }, { removeKeys: [{ keyName: 'secret', replaceString: '***hidden***' }] });
     const dom = await renderInJsdom(html);
     const container = dom.window.document.querySelector('.json-viewer-container');
     expect(container.textContent).toContain('***hidden***');
@@ -160,11 +160,11 @@ describe('json-viewer', () => {
   });
 
   it('renders replaced key marker for string and object entries in removeKeysArray', async () => {
-    const html = await getViewerHTML({ secret: '12345', hidden: 'should hide', visible: 'ok' }, { removeKeysArray: [ 'hidden', { keyName: 'secret', replaceString: '***hidden***' } ] });
+    const html = await getViewerHTML({ secret: '12345', hidden: 'should hide', visible: 'ok' }, { removeKeys: [ 'hidden', { keyName: 'secret', replaceString: '***hidden***' } ] });
     const dom = await renderInJsdom(html);
     const container = dom.window.document.querySelector('.json-viewer-container');
     expect(container.textContent).toContain('***hidden***');
-    expect(container.textContent).toContain('Replaced as key was in supplied removeKeysArray');
+    expect(container.textContent).toContain('Replaced as key was in supplied removeKeys');
     expect(container.textContent).toContain('visible:');
     expect(container.textContent).toContain('ok');
   });

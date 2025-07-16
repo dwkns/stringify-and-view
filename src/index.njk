@@ -70,7 +70,34 @@ title: "JSON Viewer"
     <hr />
 
 
-    <h2>Object with Key Removal</h2>
+    <h2>Object</h2>
+    <h3>Input</h3>
+    <code><pre>{% raw %}
+{% set object = {
+    a: 1,
+    template: { big: "data", nested: { foo: "bar" } },
+    b: { template: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ title: "object" }) | safe }}
+    {% endraw %}</pre></code>
+    <h3>Output</h3>
+    {% set object = {
+    a: 1,
+    template: { big: "data", nested: { foo: "bar" } },
+    b: { template: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ title: "object" }) | safe }}
+    <hr />
+
+        <h2>Object with Key Removal</h2>
     <h3>Input</h3>
     <code><pre>{% raw %}
 {% set object = {
@@ -110,35 +137,46 @@ title: "JSON Viewer"
     ] 
 }) | safe }}
     <hr />
-    <p> Using `jsonViewer` — Input: <code><pre>{% raw %}
+
+    <h2>Complex Object with all options</h2>
+    <h3>Input</h3>
+    <p><code>{% raw %}
 {{ collections.all[0] | jsonViewer({
     title: "collections.all[0]",
     showTypes: false,
     defaultExpanded: false,
     pathsOnHover: false,
     showControls: true,
-    removeKeysArray: [{
+    removeKeys: [{
         keyName: 'template',
         replaceString: 'Removed for performance reasons'
       }]
 }) | safe }}
-{% endraw %}</pre></code></p>
-
-<p>Output: {{ collections.all[0] | jsonViewer({
+{% endraw %}</code></p>
+    <h3>Output</h3>
+    {{ collections.all[0] | jsonViewer({
         title: "collections.all[0]",
         showTypes: false,
         defaultExpanded: false,
         pathsOnHover: false,
         showControls: true,
-        removeKeysArray: [{
+        removeKeys: [{
             keyName: 'template',
             replaceString: 'Removed for performance reasons'
           }]
 
-    }) | safe }}</p>
-    <hr>
-<p>Using consolePlus — input: <code><pre>{% raw %}{% console collections.all[0] %}{% endraw %}</pre></code></p>
-<p> Output: {% console collections.all[0] %}</p>
+    }) | safe }}
+    <hr />
+
+
+
+<h2>Complex Object using consolePlus (for comparison)</h2>
+    <h3>Input</h3>
+    <p><code>{% raw %} {% console collections.all[0] %}{% endraw %}</code></p>
+    <h3>Output</h3>
+    {% console collections.all[0] %}
+    <hr />
+
 
 </body>
 
