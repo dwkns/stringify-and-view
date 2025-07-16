@@ -12,17 +12,17 @@ export async function stringifyPlus(data, options = {}) {
     // Define default options
     const defaults = {
         maxCircularDepth: 1,
-        removeKeys: [] // Array of { "keyName", "replaceString" }
+        removeKeysArray: [] // Array of { keyName, replaceString }
     };
     // Merge defaults with incoming options (options take precedence)
     options = Object.assign({}, defaults, options);
 
     // Helper to find a replacement string for a key, if any
     function getReplacementForKey(key) {
-        if (!Array.isArray(options.removeKeys)) return null;
-        for (const entry of options.removeKeys) {
+        if (!Array.isArray(options.removeKeysArray)) return null;
+        for (const entry of options.removeKeysArray) {
             if (typeof entry === 'string' && entry === key) {
-                return 'Replaced as key was in supplied removeKeys';
+                return 'Replaced as key was in supplied removeKeysArray';
             } else if (typeof entry === 'object' && entry.keyName === key) {
                 return entry.replaceString;
             }

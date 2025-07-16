@@ -209,11 +209,11 @@ describe('stringifyPlus', () => {
         hidden: 'should hide',
         visible: 'ok'
       };
-      await expect(stringifyPlus(input, { removeKeys: [
+      await expect(stringifyPlus(input, { removeKeysArray: [
         'template',
         { keyName: 'secret', replaceString: '***hidden***' },
         'hidden'
-      ] })).resolves.toBe('{"a":1,"template":"Replaced as key was in supplied removeKeys","b":{"template":"Replaced as key was in supplied removeKeys"},"secret":"***hidden***","hidden":"Replaced as key was in supplied removeKeys","visible":"ok"}');
+      ] })).resolves.toBe('{"a":1,"template":"Replaced as key was in supplied removeKeysArray","b":{"template":"Replaced as key was in supplied removeKeysArray"},"secret":"***hidden***","hidden":"Replaced as key was in supplied removeKeysArray","visible":"ok"}');
     });
   });
 
