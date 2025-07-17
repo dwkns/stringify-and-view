@@ -45,23 +45,7 @@ title: "JSON Viewer"
         visible: 'ok'
     } %}
 
-    {{ object | jsonViewer({ 
-        title: "object"
-    }) | safe }}
 
-    {{ object | jsonViewer({ 
-        title: "object",  
-        removeKeys: [ 
-            'template'
-        ] 
-    }) | safe }}
-
-    {{ object | jsonViewer({ 
-        title: "object",  
-        removeKeys: [ 
-           { 'template': 'Removed for performance reasons Yippie' }
-        ] 
-    }) | safe }}
 
 
 
@@ -261,7 +245,7 @@ title: "JSON Viewer"
 
 
 
-<h2>Complex Object using consolePlus (for comparison)</h2>
+    <h2>Complex Object using consolePlus (for comparison)</h2>
     <h3>Input</h3>
     <p><code>{% raw %} {% console collections.all[0] %}{% endraw %}</code></p>
     <h3>Output</h3>
@@ -269,6 +253,24 @@ title: "JSON Viewer"
     <hr />
 
 
+    <h2>Debugging remove keys</h2>
+    {{ object | jsonViewer({ 
+        title: "object"
+    }) | safe }}
+
+    {{ object | jsonViewer({ 
+        title: "object",  
+        removeKeys: [ 
+            'template'
+        ] 
+    }) | safe }}
+
+    {{ object | jsonViewer({ 
+        title: "object",  
+        removeKeys: [ 
+           { 'template': 'Removed for performance reasons Yippie' }
+        ] 
+    }) | safe }}
 </body>
 
 </html>
