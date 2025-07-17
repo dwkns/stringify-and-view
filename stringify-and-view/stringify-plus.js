@@ -6,27 +6,56 @@
  * @module stringify-plus
  * @param {any} data - The data to stringify
  * @param {Object} [options] - Optional configuration options
+ * @param {number} [options.maxCircularDepth=1] - Maximum depth for circular references
+ * @param {Array} [options.removeKeys=[]] - Array of keys to remove/replace (strings or {keyName, replaceString} objects)
+ * @param {boolean} [options.showTemplate=false] - If true, shows 'template' keys; if false, replaces them with performance message
  * @returns {Promise<string>} The compact stringified data
  */
 export async function stringifyPlus(data, options = {}) {
     // Define default options
     const defaults = {
         maxCircularDepth: 1,
-        removeKeys: [] // Array of { keyName, replaceString }
+        removeKeys: [], // Array of { keyName, replaceString }
+        showTemplate: false // Special option to show template keys
     };
     // Merge defaults with incoming options (options take precedence)
     options = Object.assign({}, defaults, options);
 
     // Helper to find a replacement string for a key, if any
     function getReplacementForKey(key) {
-        if (!Array.isArray(options.removeKeys)) return null;
-        for (const entry of options.removeKeys) {
-            if (typeof entry === 'string' && entry === key) {
-                return 'Replaced as key was in supplied removeKeys';
-            } else if (typeof entry === 'object' && entry.keyName === key) {
-                return entry.replaceString;
+        // Special case: if key is 'template' and showTemplate is true, never replace it
+        if (key === 'template' && options.showTemplate) {
+            return null;
+        }
+        
+        // Check if there's a specific removeKeys entry for this key
+        if (Array.isArray(options.removeKeys)) {
+            // First check for object entries (they take precedence)
+            for (const entry of options.removeKeys) {
+                if (typeof entry === 'object' && entry !== null) {
+                    // Handle both formats: {keyName, replaceString} and {key: value}
+                    if (entry.keyName === key || entry[key] !== undefined) {
+                        return entry.replaceString || entry[key];
+                    }
+                }
+            }
+            // Then check for string entries
+            for (const entry of options.removeKeys) {
+                if (typeof entry === 'string' && entry === key) {
+                    // Special case: template key gets default template replacement message
+                    if (key === 'template') {
+                        return 'Removed for performance reasons. Use { showTemplate: true } to show it';
+                    }
+                    return 'Replaced as key was in supplied removeKeys';
+                }
             }
         }
+        
+        // Special case: if key is 'template' and showTemplate is false, replace with default message
+        if (key === 'template' && !options.showTemplate) {
+            return 'Removed for performance reasons. Use { showTemplate: true } to show it';
+        }
+        
         return null;
     }
 

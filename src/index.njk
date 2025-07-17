@@ -35,6 +35,36 @@ title: "JSON Viewer"
 </head>
 
 <body>
+
+    {% set object = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        b: { template: { x: 1 } },
+        secret: '12345',
+        hidden: 'should hide',
+        visible: 'ok'
+    } %}
+
+    {{ object | jsonViewer({ 
+        title: "object"
+    }) | safe }}
+
+    {{ object | jsonViewer({ 
+        title: "object",  
+        removeKeys: [ 
+            'template'
+        ] 
+    }) | safe }}
+
+    {{ object | jsonViewer({ 
+        title: "object",  
+        removeKeys: [ 
+           { 'template': 'Removed for performance reasons Yippie' }
+        ] 
+    }) | safe }}
+
+
+
        <h1>{{title}}</h1>
 
     <h2>Comparison with | dump</h2>
@@ -75,6 +105,34 @@ title: "JSON Viewer"
     <code><pre>{% raw %}
 {% set object = {
     a: 1,
+    nested: { big: "data", nested: { foo: "bar" } },
+    b: { nested: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ title: "object" }) | safe }}
+    {% endraw %}</pre></code>
+    <h3>Output</h3>
+    {% set object = {
+    a: 1,
+    nested: { big: "data", nested: { foo: "bar" } },
+    b: { nested: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ title: "object" }) | safe }}
+    <hr />
+
+
+        <h2>Object with automatic template key removal</h2>
+    <h3>Input</h3>
+    <code><pre>{% raw %}
+{% set object = {
+    a: 1,
     template: { big: "data", nested: { foo: "bar" } },
     b: { template: { x: 1 } },
     secret: '12345',
@@ -82,7 +140,7 @@ title: "JSON Viewer"
     visible: 'ok'
 } %}
        
-{{ object | jsonViewer({ title: "object" }) | safe }}
+{{ object | jsonViewer({ title: "Object with automatic template key removal" }) | safe }}
     {% endraw %}</pre></code>
     <h3>Output</h3>
     {% set object = {
@@ -94,10 +152,43 @@ title: "JSON Viewer"
     visible: 'ok'
 } %}
        
-{{ object | jsonViewer({ title: "object" }) | safe }}
+{{ object | jsonViewer({ title: "Object with automatic template key removal" }) | safe }}
     <hr />
 
-        <h2>Object with Key Removal</h2>
+
+    <h2>Object showing template key</h2>
+    <h3>Input</h3>
+    <code><pre>{% raw %}
+{% set object = {
+    a: 1,
+    template: { big: "data", nested: { foo: "bar" } },
+    b: { template: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ 
+    title: "Object showing template key",
+    showTemplate: true
+}) | safe }}
+    {% endraw %}</pre></code>
+    <h3>Output</h3>
+    {% set object = {
+    a: 1,
+    template: { big: "data", nested: { foo: "bar" } },
+    b: { template: { x: 1 } },
+    secret: '12345',
+    hidden: 'should hide',
+    visible: 'ok'
+} %}
+       
+{{ object | jsonViewer({ title: "Object showing template key", showTemplate: true }) | safe }}
+    <hr />
+
+
+
+    <h2>Object with Key Replacement</h2>
     <h3>Input</h3>
     <code><pre>{% raw %}
 {% set object = {
@@ -112,7 +203,7 @@ title: "JSON Viewer"
 {{ object | jsonViewer({ 
     title: "object",  
     removeKeys: [ 
-        'template',
+        { keyName: 'template', replaceString: 'Customised Template message' },
         { keyName: 'secret', replaceString: '***hidden***' },
         'hidden'
     ] 

@@ -506,10 +506,20 @@ const JSONViewerModule = {
           element.className = 'json-viewer-value';
           
           // Special case: replaced value (no quotes, amber style)
-          // If options.removeKeys is present, check if value matches any replaceString or is the default replacement string
+          // Check if value matches any replaceString, any string value in an object entry (shorthand), or is a known replacement message
+          const isShorthandReplaced = this.options && Array.isArray(this.options.removeKeys) && this.options.removeKeys.some(entry => {
+            if (typeof entry === 'object' && entry !== null) {
+              // Check for { keyName, replaceString }
+              if (typeof entry.replaceString === 'string' && value === entry.replaceString) return true;
+              // Check for shorthand { key: value } (excluding keyName/replaceString)
+              return Object.keys(entry).some(k => k !== 'keyName' && k !== 'replaceString' && value === entry[k]);
+            }
+            return false;
+          });
           if (
-            (this.options && Array.isArray(this.options.removeKeys) && this.options.removeKeys.find(entry => value === entry.replaceString)) ||
-            value === 'Replaced as key was in supplied removeKeys'
+            isShorthandReplaced ||
+            value === 'Replaced as key was in supplied removeKeys' ||
+            value === 'Removed for performance reasons. Use { showTemplate: true } to show it'
           ) {
             element.textContent = value;
             element.classList.add('json-viewer-replaced-value');
@@ -997,6 +1007,19 @@ const JSONViewerModule = {
   }
 };
 
+/**
+ * JSON Viewer filter function for Eleventy
+ * @param {any} json - The JSON data to display
+ * @param {Object} [options] - Configuration options
+ * @param {boolean} [options.showTypes=false] - Whether to show type labels
+ * @param {boolean} [options.defaultExpanded=false] - Whether nodes are expanded by default
+ * @param {boolean} [options.pathsOnHover=false] - Whether to show key path hover panel
+ * @param {boolean} [options.showControls=false] - Whether to show controls
+ * @param {number} [options.indentWidth=6] - The number of pixels to indent each level
+ * @param {boolean} [options.showTemplate=false] - If true, shows 'template' keys; if false, replaces them with performance message
+ * @param {Array} [options.removeKeys=[]] - Array of keys to remove/replace (passed to stringifyPlus)
+ * @returns {Promise<string>} HTML string for the JSON viewer
+ */
 const jsonViewer = async function jsonViewer(json, options = {}) {
   // Define default options for the filter as well
   const defaults = {
@@ -1005,7 +1028,9 @@ const jsonViewer = async function jsonViewer(json, options = {}) {
     defaultExpanded: false,
     pathsOnHover: false,
     showControls: false,
-    indentWidth: 6
+    indentWidth: 6,
+    // Passed to stringifyPlus
+    showTemplate: false
   };
   options = Object.assign({}, defaults, options);
   const processedJSON = await stringifyPlus(json, options);

@@ -213,7 +213,104 @@ describe('stringifyPlus', () => {
         'template',
         { keyName: 'secret', replaceString: '***hidden***' },
         'hidden'
-      ] })).resolves.toBe('{"a":1,"template":"Replaced as key was in supplied removeKeys","b":{"template":"Replaced as key was in supplied removeKeys"},"secret":"***hidden***","hidden":"Replaced as key was in supplied removeKeys","visible":"ok"}');
+      ] })).resolves.toBe('{"a":1,"template":"Removed for performance reasons. Use { showTemplate: true } to show it","b":{"template":"Removed for performance reasons. Use { showTemplate: true } to show it"},"secret":"***hidden***","hidden":"Replaced as key was in supplied removeKeys","visible":"ok"}');
+    });
+
+    it('handles showTemplate option - replaces template keys by default', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        b: { template: { x: 1 } },
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input)).resolves.toBe('{"a":1,"template":"Removed for performance reasons. Use { showTemplate: true } to show it","b":{"template":"Removed for performance reasons. Use { showTemplate: true } to show it"},"visible":"ok"}');
+    });
+
+    it('handles showTemplate option - shows template keys when showTemplate is true', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        b: { template: { x: 1 } },
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { showTemplate: true })).resolves.toBe('{"a":1,"template":{"big":"data","nested":{"foo":"bar"}},"b":{"template":{"x":1}},"visible":"ok"}');
+    });
+
+    it('handles showTemplate option - showTemplate=true overrides removeKeys for template', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        secret: '12345',
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { 
+        showTemplate: true,
+        removeKeys: [
+          'template',
+          { keyName: 'secret', replaceString: '***hidden***' }
+        ] 
+      })).resolves.toBe('{"a":1,"template":{"big":"data","nested":{"foo":"bar"}},"secret":"***hidden***","visible":"ok"}');
+    });
+
+    it('handles showTemplate option - showTemplate=false allows removeKeys to work on template', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        secret: '12345',
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { 
+        showTemplate: false,
+        removeKeys: [
+          { keyName: 'template', replaceString: 'Custom template replacement' },
+          { keyName: 'secret', replaceString: '***hidden***' }
+        ] 
+      })).resolves.toBe('{"a":1,"template":"Custom template replacement","secret":"***hidden***","visible":"ok"}');
+    });
+
+    it('handles template key in removeKeys as string - shows default template message', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        secret: '12345',
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { 
+        removeKeys: [
+          'template',
+          'secret'
+        ] 
+      })).resolves.toBe('{"a":1,"template":"Removed for performance reasons. Use { showTemplate: true } to show it","secret":"Replaced as key was in supplied removeKeys","visible":"ok"}');
+    });
+
+    it('handles template key in removeKeys as object - uses custom replacement string', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        secret: '12345',
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { 
+        removeKeys: [
+          { keyName: 'template', replaceString: 'Custom template replacement' },
+          'secret'
+        ] 
+      })).resolves.toBe('{"a":1,"template":"Custom template replacement","secret":"Replaced as key was in supplied removeKeys","visible":"ok"}');
+    });
+    
+    it('handles template key in removeKeys with shorthand format - uses custom replacement string', async () => {
+      input = {
+        a: 1,
+        template: { big: "data", nested: { foo: "bar" } },
+        secret: '12345',
+        visible: 'ok'
+      };
+      await expect(stringifyPlus(input, { 
+        removeKeys: [
+          { template: 'Custom template replacement' },
+          'secret'
+        ] 
+      })).resolves.toBe('{"a":1,"template":"Custom template replacement","secret":"Replaced as key was in supplied removeKeys","visible":"ok"}');
     });
   });
 
